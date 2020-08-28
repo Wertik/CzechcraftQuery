@@ -6,4 +6,5 @@ plugin-prefix: '&6Czechcraft Query &8>> '
 debug-enabled: true
 
 refresh-rates:
-  server_info: 40
+  server_info: 100
+  next_vote: 100

@@ -9,7 +9,11 @@ import space.devport.wertik.czechcraftquery.commands.subcommands.RequestSubComma
 import space.devport.wertik.czechcraftquery.system.RequestService;
 import space.devport.wertik.czechcraftquery.system.struct.RequestType;
 
+import java.time.format.DateTimeFormatter;
+
 public class QueryPlugin extends DevportPlugin {
+
+    public static final DateTimeFormatter DATE_TIME_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     @Getter
     private RequestService service;

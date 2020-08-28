@@ -4,7 +4,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import space.devport.wertik.czechcraftquery.QueryPlugin;
-import space.devport.wertik.czechcraftquery.system.struct.ContextURL;
+import space.devport.wertik.czechcraftquery.system.struct.RequestContext;
 import space.devport.wertik.czechcraftquery.system.struct.RequestType;
 
 import java.io.BufferedReader;
@@ -23,7 +23,7 @@ public class RequestService {
         this.plugin = plugin;
     }
 
-    private URL createURL(String stringURL, ContextURL context) {
+    private URL createURL(String stringURL, RequestContext context) {
         try {
             return new URL(context.parse(stringURL));
         } catch (MalformedURLException e) {
@@ -32,7 +32,7 @@ public class RequestService {
         }
     }
 
-    public HttpURLConnection openConnection(String stringURL, ContextURL context) {
+    public HttpURLConnection openConnection(String stringURL, RequestContext context) {
         URL url = createURL(stringURL, context);
 
         if (url == null) {
@@ -48,7 +48,7 @@ public class RequestService {
         return null;
     }
 
-    public JsonObject sendRequest(RequestType type, ContextURL context) {
+    public JsonObject sendRequest(RequestType type, RequestContext context) {
         HttpURLConnection connection = openConnection(type.getStringURL(), context);
         try {
             connection.setRequestMethod("GET");

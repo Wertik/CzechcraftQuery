@@ -2,23 +2,26 @@ package space.devport.wertik.czechcraftquery.system.struct;
 
 import lombok.Data;
 
+import java.util.Objects;
+
 @Data
-public class ContextURL {
+public class RequestContext {
+
     private String serverSlug;
     private String userName;
     // YYYY/MM
     private String month;
 
-    public ContextURL(String serverSlug) {
+    public RequestContext(String serverSlug) {
         this.serverSlug = serverSlug;
     }
 
-    public ContextURL(String serverSlug, String userName) {
+    public RequestContext(String serverSlug, String userName) {
         this.serverSlug = serverSlug;
         this.userName = userName;
     }
 
-    public ContextURL(String serverSlug, String userName, String month) {
+    public RequestContext(String serverSlug, String userName, String month) {
         this.serverSlug = serverSlug;
         this.userName = userName;
         this.month = month;
@@ -34,5 +37,20 @@ public class ContextURL {
     private String parse(String str, String key, Object value) {
         if (value == null) return str;
         return str.replaceAll("(?i)" + key, value.toString());
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        RequestContext that = (RequestContext) o;
+        return Objects.equals(serverSlug, that.serverSlug) &&
+                Objects.equals(userName, that.userName) &&
+                Objects.equals(month, that.month);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(serverSlug, userName, month);
     }
 }
