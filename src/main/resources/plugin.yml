@@ -1,0 +1,8 @@
+name: ${project.name}
+version: ${project.version}
+main: ${project.groupId}.QueryPlugin
+authors: [ Wertik1206 ]
+commands:
+  czechcraftquery:
+    description: Main plugin command.
+    aliases: [ ccq, cq, czechquery, query ]

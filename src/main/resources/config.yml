@@ -1,0 +1,9 @@
+# Configuration for ${project.name}
+#
+# Version: ${project.version}
+
+plugin-prefix: '&6Czechcraft Query &8>> '
+debug-enabled: true
+
+refresh-rates:
+  server_info: 40
