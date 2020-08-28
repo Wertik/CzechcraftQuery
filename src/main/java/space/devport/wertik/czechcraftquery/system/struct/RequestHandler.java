@@ -32,7 +32,7 @@ public class RequestHandler<T extends AbstractResponse> implements Runnable {
     }
 
     public void loadOptions() {
-        this.refreshInterval = plugin.getConfig().getInt("refresh-rates." + requestType.toString().toLowerCase(), 20);
+        this.refreshInterval = plugin.getConfig().getInt("refresh-rates." + requestType.toString().toLowerCase(), 300) * 20;
     }
 
     public void stop() {
