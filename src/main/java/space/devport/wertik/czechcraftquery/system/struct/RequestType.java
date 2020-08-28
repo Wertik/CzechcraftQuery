@@ -73,10 +73,12 @@ public enum RequestType {
     }
 
     public static RequestType fromString(String str) {
-        try {
-            return RequestType.valueOf(str.toUpperCase());
-        } catch (IllegalArgumentException e) {
-            return null;
+        for (RequestType type : values()) {
+            if (type.toString().equalsIgnoreCase(str) ||
+                    type.toString().replace("_", "").equalsIgnoreCase(str) ||
+                    type.toString().replaceAll("_", "-").equalsIgnoreCase(str))
+                return type;
         }
+        return null;
     }
 }
