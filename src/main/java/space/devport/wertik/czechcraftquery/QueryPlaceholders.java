@@ -88,6 +88,8 @@ public class QueryPlaceholders extends PlaceholderExpansion {
 
                 if (args.length < 3) return "not_enough_args";
 
+                context.setUserName(player.getName());
+
                 NextVoteResponse nextVoteResponse = (NextVoteResponse) type.getRequestHandler().getResponse(context);
 
                 if (nextVoteResponse == null) return "no_response";

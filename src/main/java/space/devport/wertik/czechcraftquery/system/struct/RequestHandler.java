@@ -69,6 +69,9 @@ public class RequestHandler<T extends AbstractResponse> implements Runnable {
      * @param context RequestContext
      */
     public T sendRequest(RequestContext context) {
+
+        if (!requestType.verifyContext(context)) return null;
+
         JsonObject jsonResponse = plugin.getService().sendRequest(requestType, context);
         T response = (T) requestType.getParser().parse(jsonResponse);
         this.cache.put(context, response);

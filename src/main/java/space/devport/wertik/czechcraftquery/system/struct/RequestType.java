@@ -10,6 +10,7 @@ import space.devport.wertik.czechcraftquery.system.struct.response.impl.NextVote
 import space.devport.wertik.czechcraftquery.system.struct.response.impl.ServerInfoResponse;
 
 import java.time.LocalDateTime;
+import java.time.temporal.TemporalAccessor;
 
 public enum RequestType {
 
@@ -23,7 +24,10 @@ public enum RequestType {
     }, context -> context.getServerSlug() != null),
 
     NEXT_VOTE("https://czech-craft.eu/api/server/%SLUG%/player/%USER%/next_vote/", input -> {
-        LocalDateTime dateTime = LocalDateTime.from(QueryPlugin.DATE_TIME_FORMAT.parse(input.get("next_vote").getAsString()));
+        String date = input.get("next_vote").getAsString();
+        TemporalAccessor temporalAccessor = QueryPlugin.DATE_TIME_FORMAT.parse(date);
+        LocalDateTime dateTime = LocalDateTime.from(temporalAccessor);
+
         String userName = input.get("username").getAsString();
         return new NextVoteResponse(dateTime, userName);
     }, context -> context.getServerSlug() != null && context.getUserName() != null);
