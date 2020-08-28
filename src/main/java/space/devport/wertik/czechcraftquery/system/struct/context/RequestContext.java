@@ -1,4 +1,4 @@
-package space.devport.wertik.czechcraftquery.system.struct;
+package space.devport.wertik.czechcraftquery.system.struct.context;
 
 import lombok.Data;
 
@@ -9,7 +9,8 @@ public class RequestContext {
 
     private String serverSlug;
     private String userName;
-    // YYYY/MM
+
+    // yyyy/MM
     private String month;
 
     public RequestContext(String serverSlug) {

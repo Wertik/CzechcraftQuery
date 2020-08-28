@@ -4,7 +4,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import space.devport.wertik.czechcraftquery.QueryPlugin;
-import space.devport.wertik.czechcraftquery.system.struct.RequestContext;
+import space.devport.wertik.czechcraftquery.system.struct.context.RequestContext;
 import space.devport.wertik.czechcraftquery.system.struct.RequestType;
 
 import java.io.BufferedReader;

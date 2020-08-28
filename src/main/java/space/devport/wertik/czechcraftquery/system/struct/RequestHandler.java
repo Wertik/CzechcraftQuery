@@ -7,6 +7,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.scheduler.BukkitTask;
 import space.devport.wertik.czechcraftquery.QueryPlugin;
+import space.devport.wertik.czechcraftquery.system.struct.context.RequestContext;
 import space.devport.wertik.czechcraftquery.system.struct.response.AbstractResponse;
 
 import java.util.HashMap;
@@ -61,7 +62,12 @@ public class RequestHandler<T extends AbstractResponse> implements Runnable, Lis
         return sendRequest(context);
     }
 
-    private T sendRequest(RequestContext context) {
+    /**
+     * Send a request and cache the response.
+     *
+     * @param context RequestContext
+     */
+    public T sendRequest(RequestContext context) {
         JsonObject jsonResponse = plugin.getService().sendRequest(requestType, context);
         T response = (T) requestType.getParser().parse(jsonResponse);
         this.cache.put(context, response);
