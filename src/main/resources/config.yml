@@ -5,7 +5,17 @@
 plugin-prefix: '&6Czechcraft Query &8>> '
 debug-enabled: true
 
+# Default server slug to use on places where you can
+server-slug: 'pvpcraft'
+
+# Force all cached responses to update when a vote from Czechcraft is received.
+force-update-on-vote: true
+
 # Refresh rates in seconds.
 refresh-rates:
   server_info: 300
   next_vote: 300
+
+# Time formats
+formats:
+  duration: "H:m:s"

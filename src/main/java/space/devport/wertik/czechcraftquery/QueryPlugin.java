@@ -6,6 +6,7 @@ import space.devport.utils.DevportPlugin;
 import space.devport.utils.UsageFlag;
 import space.devport.wertik.czechcraftquery.commands.QueryCommand;
 import space.devport.wertik.czechcraftquery.commands.subcommands.*;
+import space.devport.wertik.czechcraftquery.listeners.VotifierListener;
 import space.devport.wertik.czechcraftquery.system.RequestService;
 import space.devport.wertik.czechcraftquery.system.struct.RequestType;
 
@@ -30,6 +31,10 @@ public class QueryPlugin extends DevportPlugin {
         RequestType.initializeHandlers(this);
 
         new QueryLanguage();
+
+        loadOptions();
+
+        registerListener(new VotifierListener(this));
 
         addMainCommand(new QueryCommand())
                 .addSubCommand(new ReloadSubCommand(this))
