@@ -4,8 +4,7 @@ import lombok.Getter;
 import space.devport.utils.DevportPlugin;
 import space.devport.utils.UsageFlag;
 import space.devport.wertik.czechcraftquery.commands.QueryCommand;
-import space.devport.wertik.czechcraftquery.commands.subcommands.ReloadSubCommand;
-import space.devport.wertik.czechcraftquery.commands.subcommands.RequestSubCommand;
+import space.devport.wertik.czechcraftquery.commands.subcommands.*;
 import space.devport.wertik.czechcraftquery.system.RequestService;
 import space.devport.wertik.czechcraftquery.system.struct.RequestType;
 
@@ -28,7 +27,10 @@ public class QueryPlugin extends DevportPlugin {
 
         addMainCommand(new QueryCommand())
                 .addSubCommand(new ReloadSubCommand(this))
-                .addSubCommand(new RequestSubCommand(this));
+                .addSubCommand(new RequestSubCommand(this))
+                .addSubCommand(new ClearSubCommand(this))
+                .addSubCommand(new StartSubCommand(this))
+                .addSubCommand(new StopSubCommand(this));
     }
 
     @Override

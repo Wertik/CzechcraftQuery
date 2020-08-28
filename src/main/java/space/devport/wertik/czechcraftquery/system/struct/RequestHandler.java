@@ -8,10 +8,7 @@ import space.devport.wertik.czechcraftquery.QueryPlugin;
 import space.devport.wertik.czechcraftquery.system.struct.context.RequestContext;
 import space.devport.wertik.czechcraftquery.system.struct.response.AbstractResponse;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class RequestHandler<T extends AbstractResponse> implements Runnable {
@@ -29,6 +26,10 @@ public class RequestHandler<T extends AbstractResponse> implements Runnable {
     public RequestHandler(QueryPlugin plugin, RequestType requestType) {
         this.plugin = plugin;
         this.requestType = requestType;
+    }
+
+    public void clearCache() {
+        this.cache.clear();
     }
 
     public void loadOptions() {
@@ -95,5 +96,13 @@ public class RequestHandler<T extends AbstractResponse> implements Runnable {
         }
 
         plugin.getConsoleOutput().debug("Updated all cached values.");
+    }
+
+    public boolean isRunning() {
+        return this.task != null;
+    }
+
+    public Map<RequestContext, T> getCache() {
+        return Collections.unmodifiableMap(cache);
     }
 }
