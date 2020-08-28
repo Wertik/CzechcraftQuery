@@ -52,8 +52,8 @@ public class RequestSubCommand extends SubCommand {
             else
                 username = attemptParseUsername(sender, args[3]);
 
-            context.month(month)
-                    .userName(username);
+            context.setMonth(month);
+            context.setUserName(username);
         }
 
         if (!type.verifyContext(context)) {

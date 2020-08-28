@@ -1,18 +1,22 @@
 package space.devport.wertik.czechcraftquery.system.struct.context;
 
 import lombok.Getter;
+import lombok.Setter;
 
 import java.util.Objects;
 
 public class RequestContext {
 
     @Getter
+    @Setter
     private String serverSlug;
     @Getter
+    @Setter
     private String userName;
 
     // yyyy/MM
     @Getter
+    @Setter
     private String month;
 
     public RequestContext(String serverSlug) {
@@ -40,21 +44,6 @@ public class RequestContext {
     private String parse(String str, String key, Object value) {
         if (value == null) return str;
         return str.replaceAll("(?i)" + key, value.toString());
-    }
-
-    public RequestContext month(String month) {
-        this.month = month;
-        return this;
-    }
-
-    public RequestContext serverSlug(String serverSlug) {
-        this.serverSlug = serverSlug;
-        return this;
-    }
-
-    public RequestContext userName(String userName) {
-        this.userName = userName;
-        return this;
     }
 
     @Override
