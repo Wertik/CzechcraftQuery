@@ -2,9 +2,7 @@ package space.devport.wertik.czechcraftquery.system.struct;
 
 import com.google.gson.JsonObject;
 import org.bukkit.Bukkit;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
 import space.devport.wertik.czechcraftquery.QueryPlugin;
 import space.devport.wertik.czechcraftquery.system.struct.context.RequestContext;
@@ -13,8 +11,10 @@ import space.devport.wertik.czechcraftquery.system.struct.response.AbstractRespo
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
-public class RequestHandler<T extends AbstractResponse> implements Runnable, Listener {
+public class RequestHandler<T extends AbstractResponse> implements Runnable {
 
     private final QueryPlugin plugin;
 
@@ -78,21 +78,22 @@ public class RequestHandler<T extends AbstractResponse> implements Runnable, Lis
     @Override
     public void run() {
 
+        Set<String> onlinePlayers = Bukkit.getOnlinePlayers()
+                .stream().map(Player::getName)
+                .collect(Collectors.toSet());
+
         // Update all cached values
         for (RequestContext context : new HashSet<>(this.cache.keySet())) {
+
+            // Player disconnected
+            if (context.getUserName() != null && !onlinePlayers.contains(context.getUserName())) {
+                this.cache.remove(context);
+                plugin.getConsoleOutput().debug("Removed context " + context.toString());
+            }
+
             sendRequest(context);
         }
 
         plugin.getConsoleOutput().debug("Updated all cached values.");
-    }
-
-    // Remove all player cached values when he leaves.
-    @EventHandler
-    public void onLeave(PlayerQuitEvent event) {
-        for (RequestContext context : new HashSet<>(this.cache.keySet())) {
-            if (context.getUserName().equalsIgnoreCase(event.getPlayer().getName())) {
-                this.cache.remove(context);
-            }
-        }
     }
 }

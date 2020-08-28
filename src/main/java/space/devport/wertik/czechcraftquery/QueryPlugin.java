@@ -24,6 +24,8 @@ public class QueryPlugin extends DevportPlugin {
 
         RequestType.initializeHandlers(this);
 
+        new QueryLanguage();
+
         addMainCommand(new QueryCommand())
                 .addSubCommand(new ReloadSubCommand(this))
                 .addSubCommand(new RequestSubCommand(this));
@@ -31,16 +33,15 @@ public class QueryPlugin extends DevportPlugin {
 
     @Override
     public void onPluginDisable() {
-
     }
 
     @Override
     public void onReload() {
-
+        RequestType.reloadHandlers(this);
     }
 
     @Override
     public UsageFlag[] usageFlags() {
-        return new UsageFlag[]{UsageFlag.COMMANDS, UsageFlag.CONFIGURATION};
+        return new UsageFlag[]{UsageFlag.COMMANDS, UsageFlag.CONFIGURATION, UsageFlag.LANGUAGE};
     }
 }

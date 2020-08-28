@@ -33,7 +33,9 @@ public class RequestSubCommand extends SubCommand {
     protected CommandResult perform(CommandSender sender, String label, String[] args) {
         RequestType type = RequestType.fromString(args[0]);
         if (type == null) {
-            //TODO err msg
+            language.getPrefixed("Commands.Invalid-Type")
+                    .replace("%param%", args[0])
+                    .send(sender);
             return CommandResult.FAILURE;
         }
 
@@ -50,18 +52,22 @@ public class RequestSubCommand extends SubCommand {
             else
                 username = attemptParseUsername(sender, args[3]);
 
-            context.setMonth(month);
-            context.setUserName(username);
+            context.month(month)
+                    .userName(username);
         }
 
         if (!type.verifyContext(context)) {
-            //TODO err msg
+            language.getPrefixed("Commands.Invalid-Context")
+                    .replace("%type%", type.toString())
+                    .send(sender);
             return CommandResult.FAILURE;
         }
 
-        //TODO msg
         AbstractResponse response = type.getRequestHandler().getResponse(context);
-        sender.sendMessage(response.toString());
+        language.getPrefixed("Commands.Request.Done")
+                .replace("%type%", type.toString())
+                .replace("%response%", response.toString())
+                .send(sender);
         return CommandResult.SUCCESS;
     }
 

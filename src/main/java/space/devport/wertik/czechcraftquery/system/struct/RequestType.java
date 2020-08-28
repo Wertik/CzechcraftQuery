@@ -5,7 +5,6 @@ import lombok.Setter;
 import space.devport.wertik.czechcraftquery.QueryPlugin;
 import space.devport.wertik.czechcraftquery.system.struct.context.ContextVerifier;
 import space.devport.wertik.czechcraftquery.system.struct.context.RequestContext;
-import space.devport.wertik.czechcraftquery.system.struct.response.AbstractResponse;
 import space.devport.wertik.czechcraftquery.system.struct.response.IResponseParser;
 import space.devport.wertik.czechcraftquery.system.struct.response.impl.NextVoteResponse;
 import space.devport.wertik.czechcraftquery.system.struct.response.impl.ServerInfoResponse;
@@ -60,6 +59,16 @@ public enum RequestType {
             handler.start();
 
             type.setRequestHandler(handler);
+            plugin.getConsoleOutput().debug("Registered request handler for " + type.toString());
+        }
+    }
+
+    public static void reloadHandlers(QueryPlugin plugin) {
+        for (RequestType type : values()) {
+            type.getRequestHandler().stop();
+            type.getRequestHandler().loadOptions();
+            type.getRequestHandler().start();
+            plugin.getConsoleOutput().debug("Reloaded request handler update task for " + type.toString());
         }
     }
 
