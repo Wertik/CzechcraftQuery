@@ -22,6 +22,8 @@ public class QueryPlugin extends DevportPlugin {
     @Getter
     private RequestService service;
 
+    private VotifierListener votifierListener;
+
     private QueryPlaceholders placeholders;
 
     @Override
@@ -34,8 +36,6 @@ public class QueryPlugin extends DevportPlugin {
 
         loadOptions();
 
-        registerListener(new VotifierListener(this));
-
         addMainCommand(new QueryCommand())
                 .addSubCommand(new ReloadSubCommand(this))
                 .addSubCommand(new RequestSubCommand(this))
@@ -43,6 +43,7 @@ public class QueryPlugin extends DevportPlugin {
                 .addSubCommand(new StartSubCommand(this))
                 .addSubCommand(new StopSubCommand(this));
 
+        setupVotifier();
         setupPlaceholders();
     }
 
@@ -58,6 +59,15 @@ public class QueryPlugin extends DevportPlugin {
     public void onReload() {
         RequestType.reloadHandlers(this);
         setupPlaceholders();
+        setupVotifier();
+    }
+
+    private void setupVotifier() {
+        if (getPluginManager().isPluginEnabled("Votifier") && this.votifierListener == null) {
+            this.votifierListener = new VotifierListener(this);
+            registerListener(votifierListener);
+            consoleOutput.info("Registered Votifier listener.");
+        }
     }
 
     private void setupPlaceholders() {
