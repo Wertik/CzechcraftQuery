@@ -55,6 +55,7 @@
                 <version>3.2.2</version>
                 <executions>
                     <execution>
+                        <id>Devport Utils Shade</id>
                         <phase>package</phase>
                         <goals>
                             <goal>shade</goal>
@@ -68,6 +69,12 @@
                                 </relocation>
                             </relocations>
                         </configuration>
+                    </execution>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
                     </execution>
                 </executions>
             </plugin>
@@ -100,7 +107,7 @@
             <groupId>org.jetbrains</groupId>
             <artifactId>annotations</artifactId>
             <version>18.0.0</version>
-            <scope>compile</scope>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>

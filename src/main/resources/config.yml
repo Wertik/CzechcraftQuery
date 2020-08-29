@@ -18,4 +18,4 @@ refresh-rates:
 
 # Time formats
 formats:
-  duration: "H:m:s"
+  duration: "HH:mm:ss"
