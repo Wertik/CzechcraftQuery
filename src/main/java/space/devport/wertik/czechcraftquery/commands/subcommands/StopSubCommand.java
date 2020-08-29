@@ -36,6 +36,7 @@ public class StopSubCommand extends SubCommand {
                 return CommandResult.FAILURE;
             }
 
+            type.getRequestHandler().stop();
             language.getPrefixed("Commands.Stop.Done-Single")
                     .replace("%type%", type.toString())
                     .send(sender);
@@ -43,7 +44,7 @@ public class StopSubCommand extends SubCommand {
         }
 
         for (RequestType type : RequestType.values()) {
-            type.getRequestHandler().start();
+            type.getRequestHandler().stop();
         }
 
         language.sendPrefixed(sender, "Commands.Stop.Done");
