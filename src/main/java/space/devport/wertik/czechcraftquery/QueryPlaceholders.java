@@ -65,7 +65,7 @@ public class QueryPlaceholders extends PlaceholderExpansion {
             case SERVER_INFO:
                 if (args.length < 3) return "not_enough_args";
 
-                ServerInfoResponse serverInfoResponse = (ServerInfoResponse) type.getRequestHandler().getResponse(context);
+                ServerInfoResponse serverInfoResponse = (ServerInfoResponse) type.getRequestHandler().getResponse(context).join();
 
                 if (serverInfoResponse == null) return "no_response";
 
@@ -90,7 +90,7 @@ public class QueryPlaceholders extends PlaceholderExpansion {
 
                 context.setUserName(player.getName());
 
-                NextVoteResponse nextVoteResponse = (NextVoteResponse) type.getRequestHandler().getResponse(context);
+                NextVoteResponse nextVoteResponse = (NextVoteResponse) type.getRequestHandler().getResponse(context).join();
 
                 if (nextVoteResponse == null) return "no_response";
 

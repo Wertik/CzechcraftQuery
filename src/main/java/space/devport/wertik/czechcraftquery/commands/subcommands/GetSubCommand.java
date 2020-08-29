@@ -14,23 +14,23 @@ import space.devport.wertik.czechcraftquery.system.struct.response.AbstractRespo
 
 import java.util.concurrent.CompletableFuture;
 
-public class RequestSubCommand extends SubCommand {
+public class GetSubCommand extends SubCommand {
 
     private final QueryPlugin plugin;
 
-    public RequestSubCommand(QueryPlugin plugin) {
-        super("request");
+    public GetSubCommand(QueryPlugin plugin) {
+        super("get");
         this.plugin = plugin;
         this.preconditions = new Preconditions()
-                .permissions("czechcraftquery.request");
+                .permissions("czechcraftquery.get");
     }
 
     @Override
     protected CommandResult perform(CommandSender sender, String label, String[] args) {
-
         RequestType type = CommandUtils.parseRequestType(sender, language, args[0]);
 
-        if (type == null) return CommandResult.FAILURE;
+        if (type == null)
+            return CommandResult.FAILURE;
 
         String serverSlug = args[1];
 
@@ -67,16 +67,16 @@ public class RequestSubCommand extends SubCommand {
 
     @Override
     public @NotNull String getDefaultUsage() {
-        return "/%label% request <type> <serverSlug> (username/me) (month)";
+        return "/%label% get <type> (serverSlug) (username) (month)";
     }
 
     @Override
     public @NotNull String getDefaultDescription() {
-        return "Send a request for data with specified context. -f == force request.";
+        return "Get a response based on context.";
     }
 
     @Override
     public @NotNull ArgumentRange getRange() {
-        return new ArgumentRange(2, 4);
+        return new ArgumentRange(1, 4);
     }
 }

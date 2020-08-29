@@ -10,11 +10,14 @@ import space.devport.wertik.czechcraftquery.listeners.VotifierListener;
 import space.devport.wertik.czechcraftquery.system.RequestService;
 import space.devport.wertik.czechcraftquery.system.struct.RequestType;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.time.format.DateTimeFormatter;
 
 public class QueryPlugin extends DevportPlugin {
 
     public static final DateTimeFormatter DATE_TIME_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    public static final DateFormat MONTH_FORMAT = new SimpleDateFormat("yyyy/MM");
 
     @Getter
     private String durationFormat;
@@ -38,6 +41,7 @@ public class QueryPlugin extends DevportPlugin {
 
         addMainCommand(new QueryCommand())
                 .addSubCommand(new ReloadSubCommand(this))
+                .addSubCommand(new GetSubCommand(this))
                 .addSubCommand(new RequestSubCommand(this))
                 .addSubCommand(new ClearSubCommand(this))
                 .addSubCommand(new StartSubCommand(this))

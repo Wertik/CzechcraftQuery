@@ -1,10 +1,13 @@
 package space.devport.wertik.czechcraftquery.system.struct;
 
+import com.google.gson.JsonObject;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.commons.lang.NotImplementedException;
 import space.devport.wertik.czechcraftquery.QueryPlugin;
 import space.devport.wertik.czechcraftquery.system.struct.context.ContextVerifier;
 import space.devport.wertik.czechcraftquery.system.struct.context.RequestContext;
+import space.devport.wertik.czechcraftquery.system.struct.response.AbstractResponse;
 import space.devport.wertik.czechcraftquery.system.struct.response.IResponseParser;
 import space.devport.wertik.czechcraftquery.system.struct.response.impl.NextVoteResponse;
 import space.devport.wertik.czechcraftquery.system.struct.response.impl.ServerInfoResponse;
@@ -33,7 +36,11 @@ public enum RequestType {
         String userName = input.get("username").getAsString();
 
         return new NextVoteResponse(dateTime, userName);
-    }, context -> context.getServerSlug() != null && context.getUserName() != null);
+    }, context -> context.getServerSlug() != null && context.getUserName() != null),
+
+    EXCEPTION_TEST("", input -> {
+        throw new NotImplementedException("Testing the exception handling.");
+    }, context -> true);
 
     @Getter
     private final String stringURL;
@@ -52,6 +59,19 @@ public enum RequestType {
         this.stringURL = stringURL;
         this.parser = parser;
         this.contextVerifier = contextVerifier;
+    }
+
+    /**
+     * IResponseParser#parse wrapper to handle exceptions.
+     */
+    public AbstractResponse parse(JsonObject input) {
+        AbstractResponse response;
+        try {
+            response = this.parser.parse(input);
+        } catch (Exception e) {
+            return null;
+        }
+        return response;
     }
 
     public boolean verifyContext(RequestContext context) {

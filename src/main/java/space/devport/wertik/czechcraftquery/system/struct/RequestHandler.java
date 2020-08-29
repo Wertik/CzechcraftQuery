@@ -1,12 +1,14 @@
 package space.devport.wertik.czechcraftquery.system.struct;
 
 import com.google.gson.JsonObject;
+import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
 import space.devport.wertik.czechcraftquery.QueryPlugin;
 import space.devport.wertik.czechcraftquery.system.struct.context.RequestContext;
 import space.devport.wertik.czechcraftquery.system.struct.response.AbstractResponse;
+import space.devport.wertik.czechcraftquery.system.struct.response.impl.BlankResponse;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
@@ -57,11 +59,11 @@ public class RequestHandler implements Runnable {
      *
      * @param context The request context
      */
-    public AbstractResponse getResponse(RequestContext context) {
+    public CompletableFuture<AbstractResponse> getResponse(RequestContext context) {
         if (this.cache.containsKey(context))
-            return this.cache.get(context);
+            return CompletableFuture.supplyAsync(() -> this.cache.get(context));
 
-        return sendRequest(context).join();
+        return sendRequest(context);
     }
 
     /**
@@ -76,11 +78,15 @@ public class RequestHandler implements Runnable {
         CompletableFuture<JsonObject> future = plugin.getService().sendRequest(context.parse(requestType.getStringURL()));
 
         return future.thenApplyAsync((jsonResponse) -> {
-                    AbstractResponse response = requestType.getParser().parse(jsonResponse);
-                    this.cache.put(context, response);
-                    return response;
-                }
-        );
+            AbstractResponse response = requestType.parse(jsonResponse);
+            Validate.notNull(response, "Response could not be parsed.");
+            this.cache.put(context, response);
+            return response;
+        }).exceptionally((e) -> {
+            if (plugin.getConsoleOutput().isDebug())
+                e.printStackTrace();
+            return new BlankResponse(e.getMessage());
+        });
     }
 
     @Override
