@@ -9,6 +9,7 @@ import space.devport.wertik.czechcraftquery.system.struct.context.RequestContext
 import space.devport.wertik.czechcraftquery.system.struct.response.AbstractResponse;
 
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 public class RequestHandler<T extends AbstractResponse> implements Runnable {
@@ -60,7 +61,7 @@ public class RequestHandler<T extends AbstractResponse> implements Runnable {
         if (this.cache.containsKey(context))
             return this.cache.get(context);
 
-        return sendRequest(context);
+        return sendRequest(context).join();
     }
 
     /**
@@ -68,14 +69,18 @@ public class RequestHandler<T extends AbstractResponse> implements Runnable {
      *
      * @param context RequestContext
      */
-    public T sendRequest(RequestContext context) {
+    public CompletableFuture<T> sendRequest(RequestContext context) {
 
         if (!requestType.verifyContext(context)) return null;
 
-        JsonObject jsonResponse = plugin.getService().sendRequest(requestType, context);
-        T response = (T) requestType.getParser().parse(jsonResponse);
-        this.cache.put(context, response);
-        return response;
+        CompletableFuture<JsonObject> future = plugin.getService().sendRequest(requestType, context);
+
+        return future.thenApplyAsync((jsonResponse) -> {
+                    T response = (T) requestType.getParser().parse(jsonResponse);
+                    this.cache.put(context, response);
+                    return response;
+                }
+        );
     }
 
     // Update all cached values.
@@ -86,6 +91,8 @@ public class RequestHandler<T extends AbstractResponse> implements Runnable {
                 .stream().map(Player::getName)
                 .collect(Collectors.toSet());
 
+        plugin.getConsoleOutput().debug("Updating all cached values.");
+
         // Update all cached values
         for (RequestContext context : new HashSet<>(this.cache.keySet())) {
 
@@ -93,12 +100,11 @@ public class RequestHandler<T extends AbstractResponse> implements Runnable {
             if (context.getUserName() != null && !onlinePlayers.contains(context.getUserName())) {
                 this.cache.remove(context);
                 plugin.getConsoleOutput().debug("Removed context " + context.toString());
+                continue;
             }
 
             sendRequest(context);
         }
-
-        plugin.getConsoleOutput().debug("Updated all cached values.");
     }
 
     public boolean isRunning() {

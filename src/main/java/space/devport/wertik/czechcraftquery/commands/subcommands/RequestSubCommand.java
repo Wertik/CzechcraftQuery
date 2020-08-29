@@ -15,6 +15,7 @@ import space.devport.wertik.czechcraftquery.system.struct.response.AbstractRespo
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.concurrent.CompletableFuture;
 
 public class RequestSubCommand extends SubCommand {
 
@@ -31,7 +32,9 @@ public class RequestSubCommand extends SubCommand {
 
     @Override
     protected CommandResult perform(CommandSender sender, String label, String[] args) {
+
         RequestType type = RequestType.fromString(args[0]);
+
         if (type == null) {
             language.getPrefixed("Commands.Invalid-Type")
                     .replace("%param%", args[0])
@@ -63,11 +66,12 @@ public class RequestSubCommand extends SubCommand {
             return CommandResult.FAILURE;
         }
 
-        AbstractResponse response = type.getRequestHandler().getResponse(context);
-        language.getPrefixed("Commands.Request.Done")
-                .replace("%type%", type.toString())
-                .replace("%response%", response.toString())
-                .send(sender);
+        CompletableFuture<AbstractResponse> responseFuture = (CompletableFuture<AbstractResponse>) type.getRequestHandler().sendRequest(context);
+        responseFuture.thenAcceptAsync((response) ->
+                language.getPrefixed("Commands.Request.Done")
+                        .replace("%type%", type.toString())
+                        .replace("%response%", response.toString())
+                        .send(sender));
         return CommandResult.SUCCESS;
     }
 
@@ -97,7 +101,7 @@ public class RequestSubCommand extends SubCommand {
 
     @Override
     public @NotNull String getDefaultDescription() {
-        return "Send a request for data with specified context.";
+        return "Send a request for data with specified context. -f == force request.";
     }
 
     @Override
