@@ -46,7 +46,7 @@ public enum RequestType {
 
     @Getter
     @Setter
-    private RequestHandler<?> requestHandler;
+    private RequestHandler requestHandler;
 
     RequestType(String stringURL, IResponseParser<?> parser, ContextVerifier contextVerifier) {
         this.stringURL = stringURL;
@@ -60,7 +60,7 @@ public enum RequestType {
 
     public static void initializeHandlers(QueryPlugin plugin) {
         for (RequestType type : values()) {
-            RequestHandler<?> handler = new RequestHandler<>(plugin, type);
+            RequestHandler handler = new RequestHandler(plugin, type);
 
             handler.loadOptions();
             handler.start();

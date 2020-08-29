@@ -12,13 +12,13 @@ import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
-public class RequestHandler<T extends AbstractResponse> implements Runnable {
+public class RequestHandler implements Runnable {
 
     private final QueryPlugin plugin;
 
     private final RequestType requestType;
 
-    private final Map<RequestContext, T> cache = new HashMap<>();
+    private final Map<RequestContext, AbstractResponse> cache = new HashMap<>();
 
     // Update task
     private int refreshInterval;
@@ -57,7 +57,7 @@ public class RequestHandler<T extends AbstractResponse> implements Runnable {
      *
      * @param context The request context
      */
-    public T getResponse(RequestContext context) {
+    public AbstractResponse getResponse(RequestContext context) {
         if (this.cache.containsKey(context))
             return this.cache.get(context);
 
@@ -69,21 +69,20 @@ public class RequestHandler<T extends AbstractResponse> implements Runnable {
      *
      * @param context RequestContext
      */
-    public CompletableFuture<T> sendRequest(RequestContext context) {
+    public CompletableFuture<AbstractResponse> sendRequest(RequestContext context) {
 
         if (!requestType.verifyContext(context)) return null;
 
         CompletableFuture<JsonObject> future = plugin.getService().sendRequest(context.parse(requestType.getStringURL()));
 
         return future.thenApplyAsync((jsonResponse) -> {
-                    T response = (T) requestType.getParser().parse(jsonResponse);
+                    AbstractResponse response = requestType.getParser().parse(jsonResponse);
                     this.cache.put(context, response);
                     return response;
                 }
         );
     }
 
-    // Update all cached values.
     @Override
     public void run() {
 
@@ -93,7 +92,6 @@ public class RequestHandler<T extends AbstractResponse> implements Runnable {
 
         plugin.getConsoleOutput().debug("Updating all cached values.");
 
-        // Update all cached values
         for (RequestContext context : new HashSet<>(this.cache.keySet())) {
 
             // Player disconnected
@@ -111,7 +109,7 @@ public class RequestHandler<T extends AbstractResponse> implements Runnable {
         return this.task != null;
     }
 
-    public Map<RequestContext, T> getCache() {
+    public Map<RequestContext, AbstractResponse> getCache() {
         return Collections.unmodifiableMap(cache);
     }
 }
