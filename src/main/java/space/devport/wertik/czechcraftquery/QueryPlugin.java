@@ -48,7 +48,7 @@ public class QueryPlugin extends DevportPlugin {
     }
 
     private void loadOptions() {
-        this.durationFormat = getConfig().getString("formats.duration", "H:m:s");
+        this.durationFormat = getConfig().getString("formats.duration", "HH:mm:ss");
     }
 
     @Override
