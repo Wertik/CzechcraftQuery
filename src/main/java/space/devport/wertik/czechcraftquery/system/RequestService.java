@@ -8,8 +8,6 @@ import org.asynchttpclient.DefaultAsyncHttpClient;
 import org.asynchttpclient.ListenableFuture;
 import org.asynchttpclient.Response;
 import space.devport.wertik.czechcraftquery.QueryPlugin;
-import space.devport.wertik.czechcraftquery.system.struct.RequestType;
-import space.devport.wertik.czechcraftquery.system.struct.context.RequestContext;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -27,9 +25,9 @@ public class RequestService {
         this.plugin = plugin;
     }
 
-    public CompletableFuture<JsonObject> sendRequest(RequestType type, RequestContext context) {
+    public CompletableFuture<JsonObject> sendRequest(String stringURL) {
 
-        ListenableFuture<Response> getFuture = asyncHttpClient.prepareGet(context.parse(type.getStringURL())).execute();
+        ListenableFuture<Response> getFuture = asyncHttpClient.prepareGet(stringURL).execute();
 
         return getFuture.toCompletableFuture().thenApplyAsync((response) -> {
             BufferedReader reader = new BufferedReader(new InputStreamReader(response.getResponseBodyAsStream()));

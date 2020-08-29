@@ -73,7 +73,7 @@ public class RequestHandler<T extends AbstractResponse> implements Runnable {
 
         if (!requestType.verifyContext(context)) return null;
 
-        CompletableFuture<JsonObject> future = plugin.getService().sendRequest(requestType, context);
+        CompletableFuture<JsonObject> future = plugin.getService().sendRequest(context.parse(requestType.getStringURL()));
 
         return future.thenApplyAsync((jsonResponse) -> {
                     T response = (T) requestType.getParser().parse(jsonResponse);
