@@ -2,8 +2,8 @@
 #
 # Version: ${project.version}
 
-plugin-prefix: '&6Czechcraft Query &8>> '
-debug-enabled: true
+plugin-prefix: '&6Czechcraft Query &8| '
+debug-enabled: false
 
 # Default server slug to use on places where you can
 server-slug: 'pvpcraft'
