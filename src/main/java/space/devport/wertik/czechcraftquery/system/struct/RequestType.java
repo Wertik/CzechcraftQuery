@@ -36,11 +36,7 @@ public enum RequestType {
         String userName = input.get("username").getAsString();
 
         return new NextVoteResponse(dateTime, userName);
-    }, context -> context.getServerSlug() != null && context.getUserName() != null),
-
-    EXCEPTION_TEST("", input -> {
-        throw new NotImplementedException("Testing the exception handling.");
-    }, context -> true);
+    }, context -> context.getServerSlug() != null && context.getUserName() != null);
 
     @Getter
     private final String stringURL;
