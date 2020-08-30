@@ -50,7 +50,7 @@ public class RequestHandler implements Runnable {
         if (task != null)
             stop();
 
-        task = Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, this, 20L, refreshInterval);
+        task = Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, this, refreshInterval, refreshInterval);
         plugin.getConsoleOutput().debug("Started RequestHandler update task for " + requestType.toString());
     }
 
@@ -101,7 +101,7 @@ public class RequestHandler implements Runnable {
 
     public void updateResponses() {
 
-        plugin.getConsoleOutput().debug("Updating all cached values for type " + requestType.toString());
+        plugin.getConsoleOutput().debug("Updating all cached values for type " + requestType.toString() + "...");
 
         Set<String> onlinePlayers = Bukkit.getOnlinePlayers()
                 .stream().map(Player::getName)

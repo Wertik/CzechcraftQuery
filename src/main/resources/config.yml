@@ -5,7 +5,7 @@
 plugin-prefix: '&6Czechcraft Query &8| '
 debug-enabled: false
 
-# Default server slug to use on places where you can
+# Default server slug to use
 server-slug: 'pvpcraft'
 
 # Force all cached responses to update when a vote from Czechcraft is received.
