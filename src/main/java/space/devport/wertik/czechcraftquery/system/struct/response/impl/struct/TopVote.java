@@ -20,7 +20,7 @@ public class TopVote extends VoteData {
 
     public static TopVote parse(JsonObject jsonObject) {
         String username = jsonObject.get("username").getAsString();
-        int votes = jsonObject.get("vote_count").getAsInt();
+        int votes = jsonObject.get("votes").getAsInt();
         return new TopVote(username, votes);
     }
 

@@ -69,7 +69,6 @@ public class QueryPlaceholders extends PlaceholderExpansion {
                  * _votes%
                  * _position%
                  * _address%
-                 * _name%
                  * */
 
                 ServerInfoResponse serverInfoResponse = (ServerInfoResponse) response;

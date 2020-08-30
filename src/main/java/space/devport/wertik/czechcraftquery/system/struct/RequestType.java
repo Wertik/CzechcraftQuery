@@ -4,6 +4,7 @@ import com.google.gson.JsonObject;
 import lombok.Getter;
 import lombok.Setter;
 import space.devport.wertik.czechcraftquery.QueryPlugin;
+import space.devport.wertik.czechcraftquery.exception.ResponseParserException;
 import space.devport.wertik.czechcraftquery.system.struct.context.ContextVerifier;
 import space.devport.wertik.czechcraftquery.system.struct.context.RequestContext;
 import space.devport.wertik.czechcraftquery.system.struct.response.AbstractResponse;
@@ -64,7 +65,7 @@ public enum RequestType {
         Set<TopVote> topVoters = TopVote.parseMultiple(input.get("data").getAsJsonArray());
 
         return new TopVotersResponse(topVoters);
-    }, context -> context.getUserName() != null),
+    }, context -> context.getServerSlug() != null),
 
     SERVER_VOTES_MONTHLY("https://czech-craft.eu/api/server/%SLUG%/votes/%MONTH%/", input -> {
 
@@ -104,14 +105,12 @@ public enum RequestType {
     /**
      * IResponseParser#parse wrapper to handle exceptions.
      */
-    public AbstractResponse parse(JsonObject input) {
-        AbstractResponse response;
+    public AbstractResponse parse(JsonObject input) throws ResponseParserException {
         try {
-            response = this.parser.parse(input);
+            return this.parser.parse(input);
         } catch (Exception e) {
-            return null;
+            throw new ResponseParserException(e);
         }
-        return response;
     }
 
     public boolean verifyContext(RequestContext context) {
