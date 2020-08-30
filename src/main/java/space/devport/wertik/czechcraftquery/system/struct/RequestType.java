@@ -8,11 +8,13 @@ import space.devport.wertik.czechcraftquery.system.struct.context.ContextVerifie
 import space.devport.wertik.czechcraftquery.system.struct.context.RequestContext;
 import space.devport.wertik.czechcraftquery.system.struct.response.AbstractResponse;
 import space.devport.wertik.czechcraftquery.system.struct.response.IResponseParser;
-import space.devport.wertik.czechcraftquery.system.struct.response.impl.NextVoteResponse;
-import space.devport.wertik.czechcraftquery.system.struct.response.impl.ServerInfoResponse;
+import space.devport.wertik.czechcraftquery.system.struct.response.impl.*;
+import space.devport.wertik.czechcraftquery.system.struct.response.impl.struct.TopVote;
+import space.devport.wertik.czechcraftquery.system.struct.response.impl.struct.UserVote;
 
 import java.time.LocalDateTime;
 import java.time.temporal.TemporalAccessor;
+import java.util.Set;
 
 public enum RequestType {
 
@@ -29,13 +31,56 @@ public enum RequestType {
     }, context -> context.getServerSlug() != null),
 
     NEXT_VOTE("https://czech-craft.eu/api/server/%SLUG%/player/%USER%/next_vote/", input -> {
+
         TemporalAccessor temporalAccessor = QueryPlugin.DATE_TIME_FORMAT.parse(input.get("next_vote").getAsString());
         LocalDateTime dateTime = LocalDateTime.from(temporalAccessor);
 
         String userName = input.get("username").getAsString();
 
-        return new NextVoteResponse(dateTime, userName);
-    }, context -> context.getServerSlug() != null && context.getUserName() != null);
+        return new NextVoteResponse(userName, dateTime);
+    }, context -> context.getServerSlug() != null && context.getUserName() != null),
+
+    SERVER_VOTES("https://czech-craft.eu/api/server/%SLUG%/votes/", input -> {
+
+        int count = input.get("vote_count").getAsInt();
+        Set<UserVote> votes = UserVote.parseMultiple(input.get("data").getAsJsonArray());
+
+        return new ServerVotesResponse(count, votes);
+    }, context -> context.getServerSlug() != null),
+
+    USER_VOTES("https://czech-craft.eu/api/server/%SLUG%/player/%USER%/", input -> {
+
+        LocalDateTime dateTime = LocalDateTime.from(QueryPlugin.DATE_TIME_FORMAT.parse(input.get("next_vote").getAsString()));
+        String username = input.get("username").getAsString();
+
+        int count = input.get("vote_count").getAsInt();
+        Set<UserVote> votes = UserVote.parseMultiple(input.get("data").getAsJsonArray());
+
+        return new UserVotesResponse(dateTime, username, count, votes);
+    }, context -> context.getServerSlug() != null && context.getUserName() != null),
+
+    TOP_VOTERS("https://czech-craft.eu/api/server/%SLUG%/voters/", input -> {
+
+        Set<TopVote> topVoters = TopVote.parseMultiple(input.get("data").getAsJsonArray());
+
+        return new TopVotersResponse(topVoters);
+    }, context -> context.getUserName() != null),
+
+    SERVER_VOTES_MONTHLY("https://czech-craft.eu/api/server/%SLUG%/votes/%MONTH%/", input -> {
+
+        int count = input.get("vote_count").getAsInt();
+        Set<UserVote> votes = UserVote.parseMultiple(input.get("data").getAsJsonArray());
+
+        return new ServerMonthlyVotesResponse(count, votes);
+    }, context -> context.getServerSlug() != null && context.getMonth() != null),
+
+    USER_VOTES_MONTHLY("https://czech-craft.eu/api/server/%SLUG%/players/%USER%/%MONTH%/", input -> {
+
+        int count = input.get("vote_count").getAsInt();
+        Set<UserVote> votes = UserVote.parseMultiple(input.get("data").getAsJsonArray());
+
+        return new UserMonthlyVotesResponse(count, votes);
+    }, context -> context.getServerSlug() != null && context.getUserName() != null && context.getMonth() != null);
 
     @Getter
     private final String stringURL;

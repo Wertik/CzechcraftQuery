@@ -2,21 +2,21 @@ package space.devport.wertik.czechcraftquery.system.struct.response.impl;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import space.devport.wertik.czechcraftquery.QueryPlugin;
 import space.devport.wertik.czechcraftquery.system.struct.response.AbstractResponse;
+import space.devport.wertik.czechcraftquery.system.struct.response.impl.struct.UserVote;
 
-import java.time.LocalDateTime;
+import java.util.Set;
 
 @AllArgsConstructor
-public class NextVoteResponse extends AbstractResponse {
+public class ServerMonthlyVotesResponse extends AbstractResponse {
 
     @Getter
-    private final String userName;
+    private final int count;
     @Getter
-    private final LocalDateTime nextVote;
+    private final Set<UserVote> votes;
 
     @Override
     public String toString() {
-        return QueryPlugin.DATE_TIME_FORMAT.format(nextVote) + ";" + userName;
+        return count + ";" + votes;
     }
 }
