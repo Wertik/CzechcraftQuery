@@ -27,7 +27,16 @@ public class RequestService {
 
     public CompletableFuture<JsonObject> sendRequest(String stringURL) {
 
-        ListenableFuture<Response> getFuture = asyncHttpClient.prepareGet(stringURL).execute();
+        ListenableFuture<Response> getFuture;
+
+        try {
+            getFuture = asyncHttpClient.prepareGet(stringURL).execute();
+        } catch (IllegalArgumentException e) {
+            plugin.getConsoleOutput().err("Could not prepare request from url " + stringURL);
+            if (plugin.getConsoleOutput().isDebug())
+                e.printStackTrace();
+            return CompletableFuture.supplyAsync(() -> null);
+        }
 
         return getFuture.toCompletableFuture().thenApplyAsync((response) -> {
             BufferedReader reader = new BufferedReader(new InputStreamReader(response.getResponseBodyAsStream()));
@@ -40,7 +49,7 @@ public class RequestService {
                 e.printStackTrace();
             }
 
-            plugin.getConsoleOutput().debug("Caught response: " + jsonResponse);
+            plugin.getConsoleOutput().debug("Caught response: " + jsonResponse + " from URL " + stringURL);
 
             JsonParser jsonParser = new JsonParser();
             JsonElement element = jsonParser.parse(jsonResponse);

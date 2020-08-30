@@ -6,6 +6,7 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import space.devport.wertik.czechcraftquery.system.struct.RequestType;
 import space.devport.wertik.czechcraftquery.system.struct.context.RequestContext;
+import space.devport.wertik.czechcraftquery.system.struct.response.AbstractResponse;
 import space.devport.wertik.czechcraftquery.system.struct.response.impl.NextVoteResponse;
 import space.devport.wertik.czechcraftquery.system.struct.response.impl.ServerInfoResponse;
 
@@ -54,6 +55,14 @@ public class QueryPlaceholders extends PlaceholderExpansion {
 
         RequestContext context = new RequestContext(args[1]);
 
+        if (player != null)
+            context.setUserName(player.getName());
+
+        AbstractResponse response = type.getRequestHandler().getResponse(context).join();
+
+        if (!response.isValid())
+            return "no_response";
+
         switch (type) {
             /*
              * _name%
@@ -65,9 +74,7 @@ public class QueryPlaceholders extends PlaceholderExpansion {
             case SERVER_INFO:
                 if (args.length < 3) return "not_enough_args";
 
-                ServerInfoResponse serverInfoResponse = (ServerInfoResponse) type.getRequestHandler().getResponse(context).join();
-
-                if (serverInfoResponse == null) return "no_response";
+                ServerInfoResponse serverInfoResponse = (ServerInfoResponse) response;
 
                 if (args[2].equalsIgnoreCase("name")) {
                     return serverInfoResponse.getServerName();
@@ -84,15 +91,9 @@ public class QueryPlaceholders extends PlaceholderExpansion {
              * _until%
              * */
             case NEXT_VOTE:
-                if (player == null) return "no_player";
-
                 if (args.length < 3) return "not_enough_args";
 
-                context.setUserName(player.getName());
-
-                NextVoteResponse nextVoteResponse = (NextVoteResponse) type.getRequestHandler().getResponse(context).join();
-
-                if (nextVoteResponse == null) return "no_response";
+                NextVoteResponse nextVoteResponse = (NextVoteResponse) response;
 
                 if (args[2].equalsIgnoreCase("canvote")) {
                     return nextVoteResponse.getNextVote().isBefore(LocalDateTime.now()) ? "yes" : "no";

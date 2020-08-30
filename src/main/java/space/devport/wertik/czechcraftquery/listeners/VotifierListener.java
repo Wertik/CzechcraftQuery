@@ -25,8 +25,7 @@ public class VotifierListener implements Listener {
         if (!event.getVote().getServiceName().equalsIgnoreCase("Czech-Craft.eu"))
             return;
 
-        RequestContext context = new RequestContext(plugin.getConfig().getString("server-slug", "pvpcraft"), event.getVote().getUsername());
-        RequestType.updateResponses(context);
-        plugin.getConsoleOutput().debug("Updated all responses.");
+        RequestContext context = new RequestContext(plugin.getConfig().getString("server-slug"), event.getVote().getUsername());
+        RequestType.updateResponsesForContext(context);
     }
 }

@@ -79,36 +79,41 @@ public class RequestHandler implements Runnable {
 
         return future.thenApplyAsync((jsonResponse) -> {
             AbstractResponse response = requestType.parse(jsonResponse);
-            Validate.notNull(response, "Response could not be parsed.");
+            Validate.notNull(response, "Response from context " + context.toString() + " could not be parsed.");
             this.cache.put(context, response);
             return response;
         }).exceptionally((e) -> {
+            plugin.getConsoleOutput().err(e.getMessage());
             if (plugin.getConsoleOutput().isDebug())
                 e.printStackTrace();
             return new BlankResponse(e.getMessage());
         });
     }
 
-    @Override
-    public void run() {
+    public void updateResponses() {
+
+        plugin.getConsoleOutput().debug("Updating all cached values for type " + requestType.toString());
 
         Set<String> onlinePlayers = Bukkit.getOnlinePlayers()
                 .stream().map(Player::getName)
                 .collect(Collectors.toSet());
-
-        plugin.getConsoleOutput().debug("Updating all cached values.");
 
         for (RequestContext context : new HashSet<>(this.cache.keySet())) {
 
             // Player disconnected
             if (context.getUserName() != null && !onlinePlayers.contains(context.getUserName())) {
                 this.cache.remove(context);
-                plugin.getConsoleOutput().debug("Removed context " + context.toString());
+                plugin.getConsoleOutput().debug("Removed context " + context.toString() + " in type " + requestType.toString());
                 continue;
             }
 
             sendRequest(context);
         }
+    }
+
+    @Override
+    public void run() {
+        updateResponses();
     }
 
     public boolean isRunning() {

@@ -93,7 +93,7 @@ public enum RequestType {
     /**
      * Force response update in all types.
      */
-    public static void updateResponses(RequestContext context) {
+    public static void updateResponsesForContext(RequestContext context) {
         for (RequestType type : values()) {
             type.getRequestHandler().sendRequest(context);
         }

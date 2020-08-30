@@ -11,6 +11,11 @@ public class BlankResponse extends AbstractResponse {
     private final String reason;
 
     @Override
+    public boolean isValid() {
+        return false;
+    }
+
+    @Override
     public String toString() {
         return "No response. Reason: " + reason;
     }

@@ -55,10 +55,10 @@ public class RequestContext {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        RequestContext that = (RequestContext) o;
-        return Objects.equals(serverSlug, that.serverSlug) &&
-                Objects.equals(userName, that.userName) &&
-                Objects.equals(month, that.month);
+        RequestContext context = (RequestContext) o;
+        return Objects.equals(serverSlug, context.serverSlug) &&
+                Objects.equals(userName, context.userName) &&
+                Objects.equals(month, context.month);
     }
 
     @Override
