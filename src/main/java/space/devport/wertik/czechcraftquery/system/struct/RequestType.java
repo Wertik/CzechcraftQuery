@@ -3,7 +3,6 @@ package space.devport.wertik.czechcraftquery.system.struct;
 import com.google.gson.JsonObject;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.commons.lang.NotImplementedException;
 import space.devport.wertik.czechcraftquery.QueryPlugin;
 import space.devport.wertik.czechcraftquery.system.struct.context.ContextVerifier;
 import space.devport.wertik.czechcraftquery.system.struct.context.RequestContext;
@@ -91,7 +90,7 @@ public enum RequestType {
      */
     public static void updateResponsesForContext(RequestContext context) {
         for (RequestType type : values()) {
-            type.getRequestHandler().sendRequest(context);
+            type.getRequestHandler().updateResponse(context);
         }
     }
 

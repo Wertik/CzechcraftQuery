@@ -90,6 +90,15 @@ public class RequestHandler implements Runnable {
         });
     }
 
+    /**
+     * Update cached value based on context.
+     * Request is sent only if there's a response already stored with this context.
+     */
+    public void updateResponse(RequestContext context) {
+        if (this.cache.containsKey(context))
+            sendRequest(context);
+    }
+
     public void updateResponses() {
 
         plugin.getConsoleOutput().debug("Updating all cached values for type " + requestType.toString());
