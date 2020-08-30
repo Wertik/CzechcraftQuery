@@ -3,19 +3,20 @@ package space.devport.wertik.czechcraftquery.system.struct.response.impl.struct;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-@AllArgsConstructor
-public class TopVote {
+public class TopVote extends VoteData {
 
     @Getter
-    private final String username;
-    @Getter
     private final int votes;
+
+    public TopVote(String username, int votes) {
+        super(username);
+        this.votes = votes;
+    }
 
     public static TopVote parse(JsonObject jsonObject) {
         String username = jsonObject.get("username").getAsString();

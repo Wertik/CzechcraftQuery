@@ -7,8 +7,7 @@ import org.jetbrains.annotations.NotNull;
 import space.devport.wertik.czechcraftquery.system.struct.RequestType;
 import space.devport.wertik.czechcraftquery.system.struct.context.RequestContext;
 import space.devport.wertik.czechcraftquery.system.struct.response.AbstractResponse;
-import space.devport.wertik.czechcraftquery.system.struct.response.impl.NextVoteResponse;
-import space.devport.wertik.czechcraftquery.system.struct.response.impl.ServerInfoResponse;
+import space.devport.wertik.czechcraftquery.system.struct.response.impl.*;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -45,9 +44,8 @@ public class QueryPlaceholders extends PlaceholderExpansion {
 
         String[] args = params.split("_");
 
-        if (args.length <= 1) {
+        if (args.length < 3)
             return "not_enough_args";
-        }
 
         RequestType type = RequestType.fromString(args[0]);
 
@@ -64,15 +62,15 @@ public class QueryPlaceholders extends PlaceholderExpansion {
             return "no_response";
 
         switch (type) {
-            /*
-             * _name%
-             * _votes%
-             * _position%
-             * _address%
-             * _name%
-             * */
+
             case SERVER_INFO:
-                if (args.length < 3) return "not_enough_args";
+                /*
+                 * _name%
+                 * _votes%
+                 * _position%
+                 * _address%
+                 * _name%
+                 * */
 
                 ServerInfoResponse serverInfoResponse = (ServerInfoResponse) response;
 
@@ -86,12 +84,58 @@ public class QueryPlaceholders extends PlaceholderExpansion {
                     return String.valueOf(serverInfoResponse.getVotes());
                 }
                 break;
-            /*
-             * _canvote%
-             * _until%
-             * */
+
+            case SERVER_VOTES:
+                /*
+                 * _count%
+                 * */
+
+                ServerVotesResponse serverVotesResponse = (ServerVotesResponse) response;
+
+                if (args[2].equalsIgnoreCase("count")) {
+                    return String.valueOf(serverVotesResponse.getCount());
+                }
+                break;
+
+            case TOP_VOTERS:
+                /*
+                 * _position% -- player position, only handles top 25
+                 * _<position>%
+                 * */
+
+                TopVotersResponse topVotersResponse = (TopVotersResponse) response;
+
+                int position = parseInt(args[2]);
+
+                if (position > 0)
+                    return String.valueOf(topVotersResponse.getTopVoters().get(Math.max(0, position - 1)).getVotes());
+
+                if (args[2].equalsIgnoreCase("position")) {
+                    if (player == null) return "no_player";
+                    return String.valueOf(topVotersResponse.findPosition(player.getUniqueId()));
+                } else return "-1";
+
+            case USER_VOTES:
+                /*
+                 * _nextvote%
+                 * _count%
+                 * */
+
+                UserVotesResponse userVotesResponse = (UserVotesResponse) response;
+
+                if (args[2].equalsIgnoreCase("count")) {
+                    return String.valueOf(userVotesResponse.getCount());
+                } else if (args[2].equalsIgnoreCase("nextvote")) {
+                    return QueryPlugin.DATE_TIME_FORMAT.format(userVotesResponse.getNextVote());
+                }
+                break;
+
             case NEXT_VOTE:
-                if (args.length < 3) return "not_enough_args";
+                //TODO Add formatted & different time elements
+                /*
+                 * _canvote%
+                 * _until%
+                 * */
 
                 NextVoteResponse nextVoteResponse = (NextVoteResponse) response;
 
@@ -107,8 +151,40 @@ public class QueryPlaceholders extends PlaceholderExpansion {
                     return DurationFormatUtils.formatDuration(until, plugin.getDurationFormat());
                 }
                 break;
+            case SERVER_VOTES_MONTHLY:
+                /*
+                 * _count%
+                 * */
+
+                ServerMonthlyVotesResponse serverMonthlyVotesResponse = (ServerMonthlyVotesResponse) response;
+
+                if (args[2].equalsIgnoreCase("count")) {
+                    return String.valueOf(serverMonthlyVotesResponse.getCount());
+                }
+                break;
+
+            case USER_VOTES_MONTHLY:
+                /*
+                 * _count%
+                 * */
+
+                if (player == null) return "no_player";
+
+                UserMonthlyVotesResponse userMonthlyVotesResponse = (UserMonthlyVotesResponse) response;
+
+                if (args[2].equalsIgnoreCase("count")) {
+                    return String.valueOf(userMonthlyVotesResponse.getCount());
+                }
         }
 
         return "invalid_params";
+    }
+
+    private int parseInt(String str) {
+        try {
+            return Integer.parseInt(str);
+        } catch (NumberFormatException e) {
+            return -1;
+        }
     }
 }

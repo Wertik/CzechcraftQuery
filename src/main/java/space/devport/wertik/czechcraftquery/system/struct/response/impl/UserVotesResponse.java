@@ -7,6 +7,7 @@ import space.devport.wertik.czechcraftquery.system.struct.response.AbstractRespo
 import space.devport.wertik.czechcraftquery.system.struct.response.impl.struct.UserVote;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.Set;
 
 @AllArgsConstructor
@@ -18,8 +19,11 @@ public class UserVotesResponse extends AbstractResponse {
     private final String username;
     @Getter
     private final int count;
-    @Getter
     private final Set<UserVote> votes;
+
+    public Set<UserVote> getVotes() {
+        return Collections.unmodifiableSet(votes);
+    }
 
     @Override
     public String toString() {

@@ -3,7 +3,6 @@ package space.devport.wertik.czechcraftquery.system.struct.response.impl.struct;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import space.devport.wertik.czechcraftquery.QueryPlugin;
 
@@ -11,15 +10,18 @@ import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
-@AllArgsConstructor
-public class UserVote {
+public class UserVote extends VoteData {
 
     @Getter
     private final LocalDateTime dateTime;
     @Getter
-    private final String username;
-    @Getter
     private final boolean delivered;
+
+    public UserVote(String username, LocalDateTime dateTime, boolean delivered) {
+        super(username);
+        this.dateTime = dateTime;
+        this.delivered = delivered;
+    }
 
     public static UserVote parse(JsonObject jsonObject) {
 
@@ -27,7 +29,7 @@ public class UserVote {
         String username = jsonObject.get("username").getAsString();
         boolean delivered = jsonObject.get("delivered").getAsBoolean();
 
-        return new UserVote(dateTime, username, delivered);
+        return new UserVote(username, dateTime, delivered);
     }
 
     public static Set<UserVote> parseMultiple(JsonArray jsonArray) {
