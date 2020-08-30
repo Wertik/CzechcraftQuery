@@ -22,7 +22,7 @@ public class VotifierListener implements Listener {
 
         plugin.getConsoleOutput().debug("Caught a votifier event! Vote: " + event.getVote().toString());
 
-        if (!event.getVote().getServiceName().equalsIgnoreCase("Czechcraft.cz"))
+        if (!event.getVote().getServiceName().equalsIgnoreCase("Czech-Craft.eu"))
             return;
 
         RequestContext context = new RequestContext(plugin.getConfig().getString("server-slug", "pvpcraft"), event.getVote().getUsername());
