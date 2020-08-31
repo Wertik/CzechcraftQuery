@@ -12,7 +12,7 @@ public class TopVotersResponse extends AbstractResponse {
 
     public TopVotersResponse(Set<TopVote> topVoters) {
         this.topVoters = topVoters.stream()
-                .sorted(Comparator.comparingInt(TopVote::getVotes))
+                .sorted(Comparator.comparingInt(TopVote::getVotes).reversed())
                 .collect(Collectors.toCollection(LinkedList::new));
     }
 

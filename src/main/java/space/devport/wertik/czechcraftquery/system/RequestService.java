@@ -3,6 +3,7 @@ package space.devport.wertik.czechcraftquery.system;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.google.gson.JsonSyntaxException;
 import org.asynchttpclient.AsyncHttpClient;
 import org.asynchttpclient.DefaultAsyncHttpClient;
 import org.asynchttpclient.ListenableFuture;
@@ -13,6 +14,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 import java.util.stream.Collectors;
 
 public class RequestService {
@@ -46,13 +48,19 @@ public class RequestService {
             try {
                 reader.close();
             } catch (IOException e) {
-                e.printStackTrace();
+                throw new CompletionException(e);
             }
 
             plugin.getConsoleOutput().debug("Caught response: " + jsonResponse + " from URL " + stringURL);
 
             JsonParser jsonParser = new JsonParser();
-            JsonElement element = jsonParser.parse(jsonResponse);
+
+            JsonElement element;
+            try {
+                element = jsonParser.parse(jsonResponse);
+            } catch (JsonSyntaxException e) {
+                throw new CompletionException(e);
+            }
 
             if (!element.isJsonObject()) return null;
 
