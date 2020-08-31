@@ -11,6 +11,6 @@ public class ShortenUtil {
     }
 
     public String shortenResponse(String rawResponse) {
-        return rawResponse.substring(0, 256) + " [...]";
+        return rawResponse.substring(0, Math.min(rawResponse.length(), 256)) + " [...]";
     }
 }
