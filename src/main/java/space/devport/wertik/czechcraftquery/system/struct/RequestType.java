@@ -72,16 +72,17 @@ public enum RequestType {
         int count = input.get("vote_count").getAsInt();
         Set<UserVote> votes = UserVote.parseMultiple(input.get("data").getAsJsonArray());
 
-        return new ServerMonthlyVotesResponse(count, votes);
+        return new ServerVotesMonthlyResponse(count, votes);
     }, context -> context.getServerSlug() != null && context.getMonth() != null),
 
+    // Seems to be removed from the API.
+    @Deprecated
     USER_VOTES_MONTHLY("https://czech-craft.eu/api/server/%SLUG%/players/%USER%/%MONTH%/", input -> {
-
         int count = input.get("vote_count").getAsInt();
         Set<UserVote> votes = UserVote.parseMultiple(input.get("data").getAsJsonArray());
 
         return new UserMonthlyVotesResponse(count, votes);
-    }, context -> context.getServerSlug() != null && context.getUserName() != null && context.getMonth() != null);
+    }, context -> false);// && context -> context.getServerSlug() != null && context.getUserName() != null && context.getMonth() != null);
 
     @Getter
     private final String stringURL;
@@ -150,7 +151,6 @@ public enum RequestType {
     public static void clearHandlerCaches(QueryPlugin plugin) {
         for (RequestType type : values()) {
             type.getRequestHandler().clearCache();
-            plugin.getConsoleOutput().debug("Cleared handler cache for " + type.toString());
         }
     }
 

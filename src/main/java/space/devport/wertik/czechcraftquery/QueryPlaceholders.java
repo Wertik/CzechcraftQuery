@@ -180,10 +180,10 @@ public class QueryPlaceholders extends PlaceholderExpansion {
 
                 if (context.getMonth() == null) return "no_month";
 
-                ServerMonthlyVotesResponse serverMonthlyVotesResponse = (ServerMonthlyVotesResponse) response;
+                ServerVotesMonthlyResponse serverVotesMonthlyResponse = (ServerVotesMonthlyResponse) response;
 
                 if (args[3].equalsIgnoreCase("count")) {
-                    return String.valueOf(serverMonthlyVotesResponse.getCount());
+                    return String.valueOf(serverVotesMonthlyResponse.getCount());
                 }
                 break;
 

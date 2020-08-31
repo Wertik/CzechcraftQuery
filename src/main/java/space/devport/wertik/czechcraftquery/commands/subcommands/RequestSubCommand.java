@@ -10,9 +10,6 @@ import space.devport.wertik.czechcraftquery.QueryPlugin;
 import space.devport.wertik.czechcraftquery.commands.CommandUtils;
 import space.devport.wertik.czechcraftquery.system.struct.RequestType;
 import space.devport.wertik.czechcraftquery.system.struct.context.RequestContext;
-import space.devport.wertik.czechcraftquery.system.struct.response.AbstractResponse;
-
-import java.util.concurrent.CompletableFuture;
 
 public class RequestSubCommand extends SubCommand {
 
@@ -38,13 +35,16 @@ public class RequestSubCommand extends SubCommand {
 
         if (args.length > 2) {
             String month = CommandUtils.attemptParseMonth(args[2]);
-            String username;
+            String username = null;
 
             if (month == null) {
                 username = CommandUtils.attemptParseUsername(sender, args[2]);
-                month = CommandUtils.attemptParseMonth(args[3]);
-            } else
-                username = CommandUtils.attemptParseUsername(sender, args[3]);
+                if (args.length > 3)
+                    month = CommandUtils.attemptParseMonth(args[3]);
+            } else {
+                if (args.length > 3)
+                    username = CommandUtils.attemptParseUsername(sender, args[3]);
+            }
 
             context.setMonth(month);
             context.setUserName(username);
@@ -57,12 +57,16 @@ public class RequestSubCommand extends SubCommand {
             return CommandResult.FAILURE;
         }
 
-        CompletableFuture<AbstractResponse> responseFuture = type.getRequestHandler().sendRequest(context);
-        responseFuture.thenAcceptAsync((response) ->
-                language.getPrefixed("Commands.Request.Done")
-                        .replace("%type%", type.toString())
-                        .replace("%response%", response.toString())
-                        .send(sender));
+        language.getPrefixed("Commands.Request.Sending")
+                .replace("%type%", type.toString())
+                .send(sender);
+
+        type.getRequestHandler().sendRequest(context)
+                .thenAcceptAsync((response) ->
+                        language.getPrefixed("Commands.Request.Done")
+                                .replace("%type%", type.toString())
+                                .replace("%response%", response.toString())
+                                .send(sender));
         return CommandResult.SUCCESS;
     }
 

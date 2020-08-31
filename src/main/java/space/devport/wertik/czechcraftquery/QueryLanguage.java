@@ -9,7 +9,10 @@ public class QueryLanguage extends LanguageDefaults {
         addDefault("Commands.Invalid-Type", "&cRequest type &f%param% &cis not valid.");
         addDefault("Commands.Invalid-Context", "&cInvalid context provided for type &f%type%");
 
-        addDefault("Commands.Request.Done", "&7Request for &f%type% &7sent, response: &f%response%");
+        addDefault("Commands.Request.Sending", "&7&oSending a request for %type%...");
+        addDefault("Commands.Request.Done", "&7Got a response: &f%response%");
+
+        addDefault("Commands.Get.Done", "&7Fetched response for &f%type%: &f%response%");
 
         addDefault("Commands.Clear.Done-Single", "&7Cleared &f%count% &7responses for type &f%type%");
         addDefault("Commands.Clear.Done", "&7Cleared &f%count% &7responses in all type handlers.");

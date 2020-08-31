@@ -38,13 +38,16 @@ public class GetSubCommand extends SubCommand {
 
         if (args.length > 2) {
             String month = CommandUtils.attemptParseMonth(args[2]);
-            String username;
+            String username = null;
 
             if (month == null) {
                 username = CommandUtils.attemptParseUsername(sender, args[2]);
-                month = CommandUtils.attemptParseMonth(args[3]);
-            } else
-                username = CommandUtils.attemptParseUsername(sender, args[3]);
+                if (args.length > 3)
+                    month = CommandUtils.attemptParseMonth(args[3]);
+            } else {
+                if (args.length > 3)
+                    username = CommandUtils.attemptParseUsername(sender, args[3]);
+            }
 
             context.setMonth(month);
             context.setUserName(username);
@@ -57,9 +60,9 @@ public class GetSubCommand extends SubCommand {
             return CommandResult.FAILURE;
         }
 
-        CompletableFuture<AbstractResponse> responseFuture = type.getRequestHandler().sendRequest(context);
+        CompletableFuture<AbstractResponse> responseFuture = type.getRequestHandler().getResponse(context);
         responseFuture.thenAcceptAsync((response) ->
-                language.getPrefixed("Commands.Request.Done")
+                language.getPrefixed("Commands.Get.Done")
                         .replace("%type%", type.toString())
                         .replace("%response%", response.toString())
                         .send(sender));

@@ -10,7 +10,7 @@ import java.util.Collections;
 import java.util.Set;
 
 @AllArgsConstructor
-public class ServerMonthlyVotesResponse extends AbstractResponse {
+public class ServerVotesMonthlyResponse extends AbstractResponse {
 
     @Getter
     private final int count;

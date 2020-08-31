@@ -32,7 +32,10 @@ public class RequestHandler implements Runnable {
     }
 
     public void clearCache() {
+        int size = this.cache.size();
         this.cache.clear();
+        if (size != 0)
+            plugin.getConsoleOutput().debug("Cleared handler cache for " + requestType.toString() + " (" + size + ")");
     }
 
     public void loadOptions() {
@@ -86,7 +89,7 @@ public class RequestHandler implements Runnable {
             plugin.getConsoleOutput().err(e.getMessage());
             if (plugin.getConsoleOutput().isDebug())
                 e.printStackTrace();
-            return new BlankResponse(e.getMessage());
+            return new BlankResponse(e.getCause().getClass().getSimpleName());
         });
     }
 
@@ -101,7 +104,9 @@ public class RequestHandler implements Runnable {
 
     public void updateResponses() {
 
-        plugin.getConsoleOutput().debug("Updating all cached values for type " + requestType.toString() + "...");
+        if (this.cache.isEmpty()) return;
+
+        plugin.getConsoleOutput().debug("Updating all cached values for type " + requestType.toString() + " (" + this.cache.size() + ") ...");
 
         Set<String> onlinePlayers = Bukkit.getOnlinePlayers()
                 .stream().map(Player::getName)
