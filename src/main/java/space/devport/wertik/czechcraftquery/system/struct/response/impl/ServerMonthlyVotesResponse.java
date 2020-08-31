@@ -2,6 +2,7 @@ package space.devport.wertik.czechcraftquery.system.struct.response.impl;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import space.devport.wertik.czechcraftquery.ShortenUtil;
 import space.devport.wertik.czechcraftquery.system.struct.response.AbstractResponse;
 import space.devport.wertik.czechcraftquery.system.struct.response.impl.struct.UserVote;
 
@@ -21,6 +22,6 @@ public class ServerMonthlyVotesResponse extends AbstractResponse {
 
     @Override
     public String toString() {
-        return count + ";" + votes;
+        return count + ";" + ShortenUtil.shortenCollection(votes);
     }
 }

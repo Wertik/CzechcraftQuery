@@ -3,6 +3,7 @@ package space.devport.wertik.czechcraftquery.system.struct.response.impl;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import space.devport.wertik.czechcraftquery.QueryPlugin;
+import space.devport.wertik.czechcraftquery.ShortenUtil;
 import space.devport.wertik.czechcraftquery.system.struct.response.AbstractResponse;
 import space.devport.wertik.czechcraftquery.system.struct.response.impl.struct.UserVote;
 
@@ -27,6 +28,6 @@ public class UserVotesResponse extends AbstractResponse {
 
     @Override
     public String toString() {
-        return username + ";" + QueryPlugin.DATE_TIME_FORMAT.format(nextVote) + ";" + count + ";" + votes.toString();
+        return username + ";" + QueryPlugin.DATE_TIME_FORMAT.format(nextVote) + ";" + count + ";" + ShortenUtil.shortenCollection(votes);
     }
 }

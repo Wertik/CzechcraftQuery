@@ -9,6 +9,7 @@ import org.asynchttpclient.DefaultAsyncHttpClient;
 import org.asynchttpclient.ListenableFuture;
 import org.asynchttpclient.Response;
 import space.devport.wertik.czechcraftquery.QueryPlugin;
+import space.devport.wertik.czechcraftquery.ShortenUtil;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -51,7 +52,7 @@ public class RequestService {
                 throw new CompletionException(e);
             }
 
-            plugin.getConsoleOutput().debug("Caught response: " + jsonResponse + " from URL " + stringURL);
+            plugin.getConsoleOutput().debug("Caught response: " + ShortenUtil.shortenResponse(jsonResponse) + " from URL " + stringURL);
 
             JsonParser jsonParser = new JsonParser();
 
