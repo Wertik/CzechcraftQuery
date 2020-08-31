@@ -56,13 +56,13 @@ public class QueryPlaceholders extends PlaceholderExpansion {
         RequestContext context = new RequestContext(args[1]);
 
         if (player != null)
-            context.setUserName(player.getName());
+            context.user(player.getName());
 
         for (String arg : args) {
             try {
                 Date date = QueryPlugin.MONTH_FORMAT.parse(arg);
                 if (date != null) {
-                    context.setMonth(arg);
+                    context.month(arg);
                     break;
                 }
             } catch (ParseException ignored) {

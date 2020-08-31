@@ -31,8 +31,8 @@ public class CommandUtils {
                     username = CommandUtils.attemptParseUsername(sender, args[3]);
             }
 
-            context.setMonth(month);
-            context.setUserName(username);
+            context.month(month);
+            context.user(username);
         }
         return context;
     }
