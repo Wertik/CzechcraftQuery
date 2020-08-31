@@ -6,9 +6,11 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
 import space.devport.wertik.czechcraftquery.QueryPlugin;
+import space.devport.wertik.czechcraftquery.exception.ErrorResponseException;
 import space.devport.wertik.czechcraftquery.system.struct.context.RequestContext;
 import space.devport.wertik.czechcraftquery.system.struct.response.AbstractResponse;
 import space.devport.wertik.czechcraftquery.system.struct.response.impl.BlankResponse;
+import space.devport.wertik.czechcraftquery.system.struct.response.impl.ErrorResponse;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
@@ -63,10 +65,12 @@ public class RequestHandler implements Runnable {
      * @param context The request context
      */
     public CompletableFuture<AbstractResponse> getResponse(RequestContext context) {
-        if (this.cache.containsKey(context))
-            return CompletableFuture.supplyAsync(() -> this.cache.get(context));
+        final RequestContext finalContext = requestType.stripContext(context);
 
-        return sendRequest(context);
+        if (this.cache.containsKey(finalContext))
+            return CompletableFuture.supplyAsync(() -> this.cache.get(finalContext));
+
+        return sendRequest(finalContext);
     }
 
     /**
@@ -76,20 +80,30 @@ public class RequestHandler implements Runnable {
      */
     public CompletableFuture<AbstractResponse> sendRequest(RequestContext context) {
 
-        if (!requestType.verifyContext(context)) return null;
+        final RequestContext finalContext = requestType.stripContext(context);
 
-        CompletableFuture<JsonObject> future = plugin.getService().sendRequest(context.parse(requestType.getStringURL()));
+        if (!requestType.verifyContext(finalContext))
+            return CompletableFuture.supplyAsync(() -> new BlankResponse("Invalid context."));
+
+        CompletableFuture<JsonObject> future = plugin.getService().sendRequest(finalContext.parse(requestType.getStringURL()));
 
         return future.thenApplyAsync((jsonResponse) -> {
             AbstractResponse response = requestType.parse(jsonResponse);
-            Validate.notNull(response, "Response from context " + context.toString() + " could not be parsed.");
-            this.cache.put(context, response);
+            Validate.notNull(response, "Response from context " + finalContext.toString() + " could not be parsed.");
+            this.cache.put(finalContext, response);
             return response;
-        }).exceptionally((e) -> {
-            plugin.getConsoleOutput().err(e.getMessage());
+        }).exceptionally((exception) -> {
+
+            if (exception instanceof ErrorResponseException) {
+                ErrorResponseException errorResponseException = (ErrorResponseException) exception;
+                plugin.getConsoleOutput().warn("Could not fetch data from API, response: " + errorResponseException.getResponseText());
+                return new ErrorResponse(errorResponseException.getResponseText());
+            }
+
+            plugin.getConsoleOutput().err(exception.getMessage());
             if (plugin.getConsoleOutput().isDebug())
-                e.printStackTrace();
-            return new BlankResponse(e.getCause().getClass().getSimpleName());
+                exception.printStackTrace();
+            return new BlankResponse(exception.getCause().getClass().getSimpleName());
         });
     }
 
@@ -98,6 +112,7 @@ public class RequestHandler implements Runnable {
      * Request is sent only if there's a response already stored with this context.
      */
     public void updateResponse(RequestContext context) {
+        context = requestType.stripContext(context);
         if (this.cache.containsKey(context))
             sendRequest(context);
     }

@@ -10,6 +10,7 @@ import org.asynchttpclient.ListenableFuture;
 import org.asynchttpclient.Response;
 import space.devport.wertik.czechcraftquery.QueryPlugin;
 import space.devport.wertik.czechcraftquery.ShortenUtil;
+import space.devport.wertik.czechcraftquery.exception.ErrorResponseException;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -42,6 +43,12 @@ public class RequestService {
         }
 
         return getFuture.toCompletableFuture().thenApplyAsync((response) -> {
+
+            plugin.getConsoleOutput().debug("Response code: " + response.getStatusCode());
+
+            if (response.getStatusCode() != 200)
+                throw new ErrorResponseException(response.getStatusText());
+
             BufferedReader reader = new BufferedReader(new InputStreamReader(response.getResponseBodyAsStream()));
 
             String jsonResponse = reader.lines().collect(Collectors.joining(""));

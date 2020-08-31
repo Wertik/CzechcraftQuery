@@ -5,7 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 import space.devport.wertik.czechcraftquery.QueryPlugin;
 import space.devport.wertik.czechcraftquery.exception.ResponseParserException;
-import space.devport.wertik.czechcraftquery.system.struct.context.ContextVerifier;
+import space.devport.wertik.czechcraftquery.system.struct.context.ContextModifier;
 import space.devport.wertik.czechcraftquery.system.struct.context.RequestContext;
 import space.devport.wertik.czechcraftquery.system.struct.response.AbstractResponse;
 import space.devport.wertik.czechcraftquery.system.struct.response.IResponseParser;
@@ -29,7 +29,17 @@ public enum RequestType {
         int votes = input.get("votes").getAsInt();
 
         return new ServerInfoResponse(serverSlug, serverName, address, position, votes);
-    }, context -> context.getServerSlug() != null),
+    }, new ContextModifier() {
+        @Override
+        public boolean verify(RequestContext context) {
+            return context.getServerSlug() != null;
+        }
+
+        @Override
+        public RequestContext strip(RequestContext context) {
+            return context.month(null).user(null);
+        }
+    }),
 
     NEXT_VOTE("https://czech-craft.eu/api/server/%SLUG%/player/%USER%/next_vote/", input -> {
 
@@ -39,7 +49,17 @@ public enum RequestType {
         String userName = input.get("username").getAsString();
 
         return new NextVoteResponse(userName, dateTime);
-    }, context -> context.getServerSlug() != null && context.getUserName() != null),
+    }, new ContextModifier() {
+        @Override
+        public boolean verify(RequestContext context) {
+            return context.getServerSlug() != null && context.getUserName() != null;
+        }
+
+        @Override
+        public RequestContext strip(RequestContext context) {
+            return context.month(null);
+        }
+    }),
 
     SERVER_VOTES("https://czech-craft.eu/api/server/%SLUG%/votes/", input -> {
 
@@ -47,7 +67,17 @@ public enum RequestType {
         Set<UserVote> votes = UserVote.parseMultiple(input.get("data").getAsJsonArray());
 
         return new ServerVotesResponse(count, votes);
-    }, context -> context.getServerSlug() != null),
+    }, new ContextModifier() {
+        @Override
+        public boolean verify(RequestContext context) {
+            return context.getServerSlug() != null;
+        }
+
+        @Override
+        public RequestContext strip(RequestContext context) {
+            return context.month(null).user(null);
+        }
+    }),
 
     USER_VOTES("https://czech-craft.eu/api/server/%SLUG%/player/%USER%/", input -> {
 
@@ -58,14 +88,34 @@ public enum RequestType {
         Set<UserVote> votes = UserVote.parseMultiple(input.get("data").getAsJsonArray());
 
         return new UserVotesResponse(dateTime, username, count, votes);
-    }, context -> context.getServerSlug() != null && context.getUserName() != null),
+    }, new ContextModifier() {
+        @Override
+        public boolean verify(RequestContext context) {
+            return context.getServerSlug() != null && context.getUserName() != null;
+        }
+
+        @Override
+        public RequestContext strip(RequestContext context) {
+            return context.month(null);
+        }
+    }),
 
     TOP_VOTERS("https://czech-craft.eu/api/server/%SLUG%/voters/", input -> {
 
         Set<TopVote> topVoters = TopVote.parseMultiple(input.get("data").getAsJsonArray());
 
         return new TopVotersResponse(topVoters);
-    }, context -> context.getServerSlug() != null),
+    }, new ContextModifier() {
+        @Override
+        public boolean verify(RequestContext context) {
+            return context.getServerSlug() != null;
+        }
+
+        @Override
+        public RequestContext strip(RequestContext context) {
+            return context.user(null).month(null);
+        }
+    }),
 
     SERVER_VOTES_MONTHLY("https://czech-craft.eu/api/server/%SLUG%/votes/%MONTH%/", input -> {
 
@@ -73,7 +123,18 @@ public enum RequestType {
         Set<UserVote> votes = UserVote.parseMultiple(input.get("data").getAsJsonArray());
 
         return new ServerVotesMonthlyResponse(count, votes);
-    }, context -> context.getServerSlug() != null && context.getMonth() != null),
+    }, new ContextModifier() {
+
+        @Override
+        public boolean verify(RequestContext context) {
+            return context.getServerSlug() != null && context.getMonth() != null;
+        }
+
+        @Override
+        public RequestContext strip(RequestContext context) {
+            return context.user(null);
+        }
+    }),
 
     // Seems to be removed from the API.
     @Deprecated
@@ -82,7 +143,17 @@ public enum RequestType {
         Set<UserVote> votes = UserVote.parseMultiple(input.get("data").getAsJsonArray());
 
         return new UserMonthlyVotesResponse(count, votes);
-    }, context -> false);// && context -> context.getServerSlug() != null && context.getUserName() != null && context.getMonth() != null);
+    }, new ContextModifier() {
+        @Override
+        public boolean verify(RequestContext context) {
+            return false;// context.getServerSlug() != null && context.getUserName() != null && context.getMonth() != null;
+        }
+
+        @Override
+        public RequestContext strip(RequestContext context) {
+            return context;
+        }
+    });
 
     @Getter
     private final String stringURL;
@@ -90,17 +161,18 @@ public enum RequestType {
     @Getter
     private final IResponseParser<?> parser;
 
+    //TODO Replace interface with required fields.
     @Getter
-    private final ContextVerifier contextVerifier;
+    private final ContextModifier contextModifier;
 
     @Getter
     @Setter
     private RequestHandler requestHandler;
 
-    RequestType(String stringURL, IResponseParser<?> parser, ContextVerifier contextVerifier) {
+    RequestType(String stringURL, IResponseParser<?> parser, ContextModifier contextModifier) {
         this.stringURL = stringURL;
         this.parser = parser;
-        this.contextVerifier = contextVerifier;
+        this.contextModifier = contextModifier;
     }
 
     /**
@@ -115,7 +187,11 @@ public enum RequestType {
     }
 
     public boolean verifyContext(RequestContext context) {
-        return contextVerifier.apply(context);
+        return contextModifier.verify(context);
+    }
+
+    public RequestContext stripContext(RequestContext context) {
+        return contextModifier.strip(context);
     }
 
     public static void initializeHandlers(QueryPlugin plugin) {
