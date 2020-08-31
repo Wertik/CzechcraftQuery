@@ -10,7 +10,7 @@ public class ShortenUtil {
         return "Collection(" + collection.size() + ")[" + collection.getClass().getSimpleName() + "]";
     }
 
-    public String shortenResponse(String rawResponse) {
-        return rawResponse.substring(0, Math.min(rawResponse.length(), 256)) + " [...]";
+    public String shortenString(String string) {
+        return string.length() > 256 ? string.substring(0, 256) + " [...]" : string;
     }
 }

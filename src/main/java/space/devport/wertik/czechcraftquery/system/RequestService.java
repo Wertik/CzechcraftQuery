@@ -52,7 +52,7 @@ public class RequestService {
                 throw new CompletionException(e);
             }
 
-            plugin.getConsoleOutput().debug("Caught response: " + ShortenUtil.shortenResponse(jsonResponse) + " from URL " + stringURL);
+            plugin.getConsoleOutput().debug("Caught response: " + ShortenUtil.shortenString(jsonResponse) + " from URL " + stringURL);
 
             JsonParser jsonParser = new JsonParser();
 
