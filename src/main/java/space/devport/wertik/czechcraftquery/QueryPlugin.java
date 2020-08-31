@@ -4,6 +4,7 @@ import lombok.Getter;
 import me.clip.placeholderapi.PlaceholderAPIPlugin;
 import space.devport.utils.DevportPlugin;
 import space.devport.utils.UsageFlag;
+import space.devport.utils.utility.VersionUtil;
 import space.devport.wertik.czechcraftquery.commands.QueryCommand;
 import space.devport.wertik.czechcraftquery.commands.subcommands.*;
 import space.devport.wertik.czechcraftquery.listeners.VotifierListener;
@@ -57,6 +58,8 @@ public class QueryPlugin extends DevportPlugin {
 
     @Override
     public void onPluginDisable() {
+        unregisterPlaceholders();
+        RequestType.clearHandlerCaches(this);
     }
 
     @Override
@@ -74,22 +77,28 @@ public class QueryPlugin extends DevportPlugin {
         }
     }
 
+    // Attempt to unregister
+    private void unregisterPlaceholders() {
+        if (getServer().getPluginManager().isPluginEnabled("PlaceholderAPI") &&
+                this.placeholders != null &&
+                VersionUtil.compareVersions("2.10.9", PlaceholderAPIPlugin.getInstance().getDescription().getVersion()) > -1) {
+
+            if (this.placeholders.isRegistered()) {
+                this.placeholders.unregister();
+                consoleOutput.debug("Unregistered placeholder expansion.");
+            }
+        }
+    }
+
     private void setupPlaceholders() {
         if (getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")) {
 
             if (placeholders == null)
                 this.placeholders = new QueryPlaceholders(this);
 
-            // Attempt to unregister
-            if (VersionUtil.compareVersions("2.10.9", PlaceholderAPIPlugin.getInstance().getDescription().getVersion()) > -1) {
-                if (this.placeholders.isRegistered()) {
-                    this.placeholders.unregister();
-                    consoleOutput.debug("Unregistered expansion");
-                }
-            }
-
+            unregisterPlaceholders();
             this.placeholders.register();
-            consoleOutput.info("Found PlaceholderAPI! Registered expansion.");
+            consoleOutput.info("Registered placeholder expansion.");
         }
     }
 

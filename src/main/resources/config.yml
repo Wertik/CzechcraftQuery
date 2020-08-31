@@ -8,7 +8,7 @@ debug-enabled: false
 # Default server slug to use
 server-slug: 'pvpcraft'
 
-# Force all cached responses to update when a vote from Czechcraft is received.
+# Force all cached responses to update when a vote from Czech-craft.eu is received.
 force-update-on-vote: true
 
 # Refresh rates in seconds.

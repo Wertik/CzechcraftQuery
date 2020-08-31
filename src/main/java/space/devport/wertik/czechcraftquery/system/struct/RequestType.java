@@ -147,6 +147,13 @@ public enum RequestType {
         }
     }
 
+    public static void clearHandlerCaches(QueryPlugin plugin) {
+        for (RequestType type : values()) {
+            type.getRequestHandler().clearCache();
+            plugin.getConsoleOutput().debug("Cleared handler cache for " + type.toString());
+        }
+    }
+
     public static RequestType fromString(String str) {
         for (RequestType type : values()) {
             if (type.toString().equalsIgnoreCase(str) ||

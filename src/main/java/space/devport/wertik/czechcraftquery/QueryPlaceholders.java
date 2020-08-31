@@ -99,15 +99,23 @@ public class QueryPlaceholders extends PlaceholderExpansion {
             case TOP_VOTERS:
                 /*
                  * _position% -- player position, only handles top 25
-                 * _<position>%
+                 * _<position>_votes%
+                 * _<position>_name%
                  * */
 
                 TopVotersResponse topVotersResponse = (TopVotersResponse) response;
 
                 int position = parseInt(args[2]);
 
-                if (position > 0)
-                    return String.valueOf(topVotersResponse.getTopVoters().get(Math.max(0, position - 1)).getVotes());
+                if (position > 0) {
+                    if (args.length < 4) return "not_enough_args";
+
+                    if (args[3].equalsIgnoreCase("votes")) {
+                        return String.valueOf(topVotersResponse.getTopVoters().get(Math.max(0, position - 1)).getVotes());
+                    } else {
+                        return topVotersResponse.getTopVoters().get(position - 1).getUsername();
+                    }
+                }
 
                 if (args[2].equalsIgnoreCase("position")) {
                     if (player == null) return "no_player";
