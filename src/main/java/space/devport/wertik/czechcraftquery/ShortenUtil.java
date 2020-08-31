@@ -7,7 +7,7 @@ import java.util.Collection;
 @UtilityClass
 public class ShortenUtil {
     public String shortenCollection(Collection<?> collection) {
-        return "Collection(" + collection.size() + ")[" + collection.getClass().getSimpleName() + "]";
+        return "Collection(" + collection.size() + ")[" + collection.getClass().getComponentType().getSimpleName() + "]";
     }
 
     public String shortenString(String string) {
