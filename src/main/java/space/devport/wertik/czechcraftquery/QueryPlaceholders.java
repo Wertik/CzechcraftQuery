@@ -9,8 +9,10 @@ import space.devport.wertik.czechcraftquery.system.struct.context.RequestContext
 import space.devport.wertik.czechcraftquery.system.struct.response.AbstractResponse;
 import space.devport.wertik.czechcraftquery.system.struct.response.impl.*;
 
+import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.Date;
 
 public class QueryPlaceholders extends PlaceholderExpansion {
 
@@ -55,6 +57,17 @@ public class QueryPlaceholders extends PlaceholderExpansion {
 
         if (player != null)
             context.setUserName(player.getName());
+
+        for (String arg : args) {
+            try {
+                Date date = QueryPlugin.MONTH_FORMAT.parse(arg);
+                if (date != null) {
+                    context.setMonth(arg);
+                    break;
+                }
+            } catch (ParseException ignored) {
+            }
+        }
 
         AbstractResponse response = type.getRequestHandler().getResponse(context).join();
 
@@ -160,26 +173,30 @@ public class QueryPlaceholders extends PlaceholderExpansion {
                 break;
             case SERVER_VOTES_MONTHLY:
                 /*
-                 * _count%
+                 * <month>_count%
                  * */
+
+                if (args.length < 4) return "not_enough_args";
 
                 ServerMonthlyVotesResponse serverMonthlyVotesResponse = (ServerMonthlyVotesResponse) response;
 
-                if (args[2].equalsIgnoreCase("count")) {
+                if (args[3].equalsIgnoreCase("count")) {
                     return String.valueOf(serverMonthlyVotesResponse.getCount());
                 }
                 break;
 
             case USER_VOTES_MONTHLY:
                 /*
-                 * _count%
+                 * <month>_count%
                  * */
 
                 if (player == null) return "no_player";
 
+                if (args.length < 4) return "not_enough_args";
+
                 UserMonthlyVotesResponse userMonthlyVotesResponse = (UserMonthlyVotesResponse) response;
 
-                if (args[2].equalsIgnoreCase("count")) {
+                if (args[3].equalsIgnoreCase("count")) {
                     return String.valueOf(userMonthlyVotesResponse.getCount());
                 }
         }
