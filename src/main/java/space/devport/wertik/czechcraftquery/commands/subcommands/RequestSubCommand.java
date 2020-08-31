@@ -2,24 +2,18 @@ package space.devport.wertik.czechcraftquery.commands.subcommands;
 
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
-import space.devport.utils.commands.SubCommand;
 import space.devport.utils.commands.struct.ArgumentRange;
 import space.devport.utils.commands.struct.CommandResult;
-import space.devport.utils.commands.struct.Preconditions;
 import space.devport.wertik.czechcraftquery.QueryPlugin;
 import space.devport.wertik.czechcraftquery.commands.CommandUtils;
+import space.devport.wertik.czechcraftquery.commands.QuerySubCommand;
 import space.devport.wertik.czechcraftquery.system.struct.RequestType;
 import space.devport.wertik.czechcraftquery.system.struct.context.RequestContext;
 
-public class RequestSubCommand extends SubCommand {
-
-    private final QueryPlugin plugin;
+public class RequestSubCommand extends QuerySubCommand {
 
     public RequestSubCommand(QueryPlugin plugin) {
-        super("request");
-        this.plugin = plugin;
-        this.preconditions = new Preconditions()
-                .permissions("czechcraftquery.request");
+        super(plugin, "request");
     }
 
     @Override
@@ -29,26 +23,7 @@ public class RequestSubCommand extends SubCommand {
 
         if (type == null) return CommandResult.FAILURE;
 
-        String serverSlug = args[1];
-
-        RequestContext context = new RequestContext(serverSlug);
-
-        if (args.length > 2) {
-            String month = CommandUtils.attemptParseMonth(args[2]);
-            String username = null;
-
-            if (month == null) {
-                username = CommandUtils.attemptParseUsername(sender, args[2]);
-                if (args.length > 3)
-                    month = CommandUtils.attemptParseMonth(args[3]);
-            } else {
-                if (args.length > 3)
-                    username = CommandUtils.attemptParseUsername(sender, args[3]);
-            }
-
-            context.setMonth(month);
-            context.setUserName(username);
-        }
+        RequestContext context = CommandUtils.parseContext(sender, args);
 
         if (!type.verifyContext(context)) {
             language.getPrefixed("Commands.Invalid-Context")

@@ -2,22 +2,16 @@ package space.devport.wertik.czechcraftquery.commands.subcommands;
 
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
-import space.devport.utils.commands.SubCommand;
 import space.devport.utils.commands.struct.ArgumentRange;
 import space.devport.utils.commands.struct.CommandResult;
-import space.devport.utils.commands.struct.Preconditions;
 import space.devport.wertik.czechcraftquery.QueryPlugin;
+import space.devport.wertik.czechcraftquery.commands.QuerySubCommand;
 import space.devport.wertik.czechcraftquery.system.struct.RequestType;
 
-public class ClearSubCommand extends SubCommand {
-
-    private final QueryPlugin plugin;
+public class ClearSubCommand extends QuerySubCommand {
 
     public ClearSubCommand(QueryPlugin plugin) {
-        super("clear");
-        this.plugin = plugin;
-        this.preconditions = new Preconditions()
-                .permissions("czechcraftquery.clear");
+        super(plugin, "clear");
     }
 
     @Override
