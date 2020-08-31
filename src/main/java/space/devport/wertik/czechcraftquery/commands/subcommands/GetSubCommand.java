@@ -40,9 +40,10 @@ public class GetSubCommand extends SubCommand {
             String month = CommandUtils.attemptParseMonth(args[2]);
             String username;
 
-            if (month == null)
+            if (month == null) {
                 username = CommandUtils.attemptParseUsername(sender, args[2]);
-            else
+                month = CommandUtils.attemptParseMonth(args[3]);
+            } else
                 username = CommandUtils.attemptParseUsername(sender, args[3]);
 
             context.setMonth(month);

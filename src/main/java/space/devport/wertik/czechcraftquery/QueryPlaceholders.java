@@ -178,6 +178,8 @@ public class QueryPlaceholders extends PlaceholderExpansion {
 
                 if (args.length < 4) return "not_enough_args";
 
+                if (context.getMonth() == null) return "no_month";
+
                 ServerMonthlyVotesResponse serverMonthlyVotesResponse = (ServerMonthlyVotesResponse) response;
 
                 if (args[3].equalsIgnoreCase("count")) {
@@ -193,6 +195,8 @@ public class QueryPlaceholders extends PlaceholderExpansion {
                 if (player == null) return "no_player";
 
                 if (args.length < 4) return "not_enough_args";
+
+                if (context.getMonth() == null) return "no_month";
 
                 UserMonthlyVotesResponse userMonthlyVotesResponse = (UserMonthlyVotesResponse) response;
 
