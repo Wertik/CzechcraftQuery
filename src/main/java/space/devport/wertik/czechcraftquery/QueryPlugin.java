@@ -28,6 +28,7 @@ public class QueryPlugin extends DevportPlugin {
     private RequestService service;
 
     private VotifierListener votifierListener;
+    private AdvanceListener advanceListener;
 
     private QueryPlaceholders placeholders;
 
@@ -41,7 +42,7 @@ public class QueryPlugin extends DevportPlugin {
 
         loadOptions();
 
-        registerListener(new AdvanceListener(this));
+        this.advanceListener = new AdvanceListener(this);
 
         addMainCommand(new QueryCommand())
                 .addSubCommand(new ReloadSubCommand(this))
@@ -70,6 +71,7 @@ public class QueryPlugin extends DevportPlugin {
         RequestType.reloadHandlers(this);
         setupPlaceholders();
         setupVotifier();
+        this.advanceListener.load();
     }
 
     private void setupVotifier() {
