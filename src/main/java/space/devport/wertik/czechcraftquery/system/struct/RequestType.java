@@ -3,12 +3,15 @@ package space.devport.wertik.czechcraftquery.system.struct;
 import com.google.gson.JsonObject;
 import lombok.Getter;
 import lombok.Setter;
+import org.bukkit.Bukkit;
 import space.devport.wertik.czechcraftquery.QueryPlugin;
+import space.devport.wertik.czechcraftquery.api.events.CzechcraftServerAdvanceEvent;
 import space.devport.wertik.czechcraftquery.exception.ResponseParserException;
 import space.devport.wertik.czechcraftquery.system.struct.context.ContextModifier;
 import space.devport.wertik.czechcraftquery.system.struct.context.RequestContext;
 import space.devport.wertik.czechcraftquery.system.struct.response.AbstractResponse;
 import space.devport.wertik.czechcraftquery.system.struct.response.IResponseParser;
+import space.devport.wertik.czechcraftquery.system.struct.response.ResponseListener;
 import space.devport.wertik.czechcraftquery.system.struct.response.impl.*;
 import space.devport.wertik.czechcraftquery.system.struct.response.impl.struct.TopVote;
 import space.devport.wertik.czechcraftquery.system.struct.response.impl.struct.UserVote;
@@ -134,6 +137,12 @@ public enum RequestType {
         public RequestContext strip(RequestContext context) {
             return context.user(null);
         }
+    }, (ResponseListener<ServerInfoResponse>) (cached, toCache) -> {
+        if (cached == null) return;
+
+        if (cached.getPosition() < toCache.getPosition()) {
+            Bukkit.getPluginManager().callEvent(new CzechcraftServerAdvanceEvent(toCache));
+        }
     }),
 
     // Seems to be removed from the API.
@@ -169,7 +178,7 @@ public enum RequestType {
     @Setter
     private RequestHandler requestHandler;
 
-    RequestType(String stringURL, IResponseParser<?> parser, ContextModifier contextModifier) {
+    RequestType(String stringURL, IResponseParser<?> parser, ContextModifier contextModifier, ResponseListener<? extends AbstractResponse>... listener) {
         this.stringURL = stringURL;
         this.parser = parser;
         this.contextModifier = contextModifier;

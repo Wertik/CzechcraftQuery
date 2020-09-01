@@ -11,6 +11,14 @@ server-slug: 'pvpcraft'
 # Force all cached responses to update when a vote from Czech-craft.eu is received.
 force-update-on-vote: true
 
+# Listen to when the server advances in the leaderboard and broadcast a message.
+advance:
+  enabled: true
+  broadcast:
+    - ' '
+    - '&7Server postoupil na pozici &8#&6%serverPosition% &7na &6Czech&8-&6craft&8.&6eu &7s &e%serverVotes% &7hlasy!'
+    - ' '
+
 # Refresh rates in seconds.
 refresh-rates:
   server_info: 300
