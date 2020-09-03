@@ -216,8 +216,8 @@ public enum RequestType {
         return contextModifier.verify(context);
     }
 
-    public RequestContext stripContext(RequestContext context) {
-        return contextModifier.strip(context);
+    public RequestContext stripContext(final RequestContext context) {
+        return contextModifier.strip(new RequestContext(context));
     }
 
     public static void initializeHandlers(QueryPlugin plugin) {

@@ -16,6 +16,12 @@ public class RequestContext {
     @Getter
     private String month;
 
+    public RequestContext(RequestContext context) {
+        this.serverSlug = context.getServerSlug();
+        this.userName = context.getUserName();
+        this.month = context.getMonth();
+    }
+
     public RequestContext(String serverSlug) {
         this.serverSlug = serverSlug;
     }
