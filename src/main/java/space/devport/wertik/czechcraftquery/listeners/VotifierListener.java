@@ -1,6 +1,7 @@
 package space.devport.wertik.czechcraftquery.listeners;
 
 import com.vexsoftware.votifier.model.VotifierEvent;
+import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import space.devport.wertik.czechcraftquery.QueryPlugin;
@@ -26,6 +27,6 @@ public class VotifierListener implements Listener {
             return;
 
         RequestContext context = new RequestContext(plugin.getConfig().getString("server-slug"), event.getVote().getUsername());
-        RequestType.updateResponsesForContext(context);
+        Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, () -> RequestType.updateResponsesForContext(context), 20L);
     }
 }
