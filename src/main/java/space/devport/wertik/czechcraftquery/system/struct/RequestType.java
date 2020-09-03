@@ -137,11 +137,16 @@ public enum RequestType {
         public RequestContext strip(RequestContext context) {
             return context.user(null);
         }
-    }, (ResponseListener<ServerInfoResponse>) (cached, toCache) -> {
+    }, (cached, toCache) -> {
         if (cached == null) return;
 
-        if (cached.getPosition() < toCache.getPosition()) {
-            Bukkit.getPluginManager().callEvent(new CzechcraftServerAdvanceEvent(toCache));
+        if (!(cached instanceof ServerInfoResponse) || !(toCache instanceof ServerInfoResponse)) return;
+
+        ServerInfoResponse cachedResponse = (ServerInfoResponse) cached;
+        ServerInfoResponse toCacheResponse = (ServerInfoResponse) toCache;
+
+        if (cachedResponse.getPosition() < toCacheResponse.getPosition()) {
+            Bukkit.getPluginManager().callEvent(new CzechcraftServerAdvanceEvent(toCacheResponse));
         }
     }),
 
@@ -178,10 +183,22 @@ public enum RequestType {
     @Setter
     private RequestHandler requestHandler;
 
-    RequestType(String stringURL, IResponseParser<?> parser, ContextModifier contextModifier, ResponseListener<? extends AbstractResponse>... listener) {
+    @Getter
+    private final ResponseListener responseListener;
+
+    RequestType(String stringURL, IResponseParser<? extends AbstractResponse> parser, ContextModifier contextModifier) {
         this.stringURL = stringURL;
         this.parser = parser;
         this.contextModifier = contextModifier;
+        this.responseListener = (cached, toCache) -> {
+        };
+    }
+
+    RequestType(String stringURL, IResponseParser<?> parser, ContextModifier contextModifier, ResponseListener responseListener) {
+        this.stringURL = stringURL;
+        this.parser = parser;
+        this.contextModifier = contextModifier;
+        this.responseListener = responseListener;
     }
 
     /**

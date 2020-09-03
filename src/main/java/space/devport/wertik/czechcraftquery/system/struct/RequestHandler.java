@@ -90,9 +90,7 @@ public class RequestHandler implements Runnable {
         return future.thenApplyAsync((jsonResponse) -> {
             AbstractResponse response = requestType.parse(jsonResponse);
             Validate.notNull(response, "Response from context " + finalContext.toString() + " could not be parsed.");
-
-            this.cache.put(finalContext, response);
-
+            cacheResponse(finalContext, response);
             return response;
         }).exceptionally((exception) -> {
 
@@ -110,6 +108,9 @@ public class RequestHandler implements Runnable {
     }
 
     private void cacheResponse(RequestContext context, AbstractResponse response) {
+        if (this.cache.containsKey(context))
+            requestType.getResponseListener().listen(this.cache.get(context), response);
+
         this.cache.put(context, response);
     }
 
