@@ -71,6 +71,7 @@ public class QueryPlugin extends DevportPlugin {
         RequestType.reloadHandlers(this);
         setupPlaceholders();
         setupVotifier();
+        loadOptions();
         this.advanceListener.load();
     }
 
