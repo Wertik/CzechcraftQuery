@@ -6,12 +6,12 @@ import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
 import space.devport.wertik.czechcraftquery.system.struct.response.impl.ServerInfoResponse;
 
-public class CzechcraftServerAdvanceEvent extends Event {
+public class CzechcraftServerDropEvent extends Event {
 
     @Getter
     private final ServerInfoResponse response;
 
-    public CzechcraftServerAdvanceEvent(ServerInfoResponse response) {
+    public CzechcraftServerDropEvent(ServerInfoResponse response) {
         this.response = response;
     }
 

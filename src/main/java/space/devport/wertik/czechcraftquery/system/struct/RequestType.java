@@ -6,13 +6,20 @@ import lombok.Setter;
 import org.bukkit.Bukkit;
 import space.devport.wertik.czechcraftquery.QueryPlugin;
 import space.devport.wertik.czechcraftquery.api.events.CzechcraftServerAdvanceEvent;
+import space.devport.wertik.czechcraftquery.api.events.CzechcraftServerDropEvent;
 import space.devport.wertik.czechcraftquery.exception.ResponseParserException;
 import space.devport.wertik.czechcraftquery.system.struct.context.ContextModifier;
 import space.devport.wertik.czechcraftquery.system.struct.context.RequestContext;
 import space.devport.wertik.czechcraftquery.system.struct.response.AbstractResponse;
 import space.devport.wertik.czechcraftquery.system.struct.response.IResponseParser;
 import space.devport.wertik.czechcraftquery.system.struct.response.ResponseListener;
-import space.devport.wertik.czechcraftquery.system.struct.response.impl.*;
+import space.devport.wertik.czechcraftquery.system.struct.response.impl.NextVoteResponse;
+import space.devport.wertik.czechcraftquery.system.struct.response.impl.ServerInfoResponse;
+import space.devport.wertik.czechcraftquery.system.struct.response.impl.ServerVotesMonthlyResponse;
+import space.devport.wertik.czechcraftquery.system.struct.response.impl.ServerVotesResponse;
+import space.devport.wertik.czechcraftquery.system.struct.response.impl.TopVotersResponse;
+import space.devport.wertik.czechcraftquery.system.struct.response.impl.UserMonthlyVotesResponse;
+import space.devport.wertik.czechcraftquery.system.struct.response.impl.UserVotesResponse;
 import space.devport.wertik.czechcraftquery.system.struct.response.impl.struct.TopVote;
 import space.devport.wertik.czechcraftquery.system.struct.response.impl.struct.UserVote;
 
@@ -41,6 +48,19 @@ public enum RequestType {
         @Override
         public RequestContext strip(RequestContext context) {
             return context.month(null).user(null);
+        }
+    }, (cached, toCache) -> {
+        if (cached == null) return;
+
+        if (!(cached instanceof ServerInfoResponse) || !(toCache instanceof ServerInfoResponse)) return;
+
+        ServerInfoResponse cachedResponse = (ServerInfoResponse) cached;
+        ServerInfoResponse toCacheResponse = (ServerInfoResponse) toCache;
+
+        if (cachedResponse.getPosition() > toCacheResponse.getPosition()) {
+            Bukkit.getPluginManager().callEvent(new CzechcraftServerAdvanceEvent(toCacheResponse));
+        } else if (cachedResponse.getPosition() < toCacheResponse.getPosition()) {
+            Bukkit.getPluginManager().callEvent(new CzechcraftServerDropEvent(toCacheResponse));
         }
     }),
 
@@ -136,17 +156,6 @@ public enum RequestType {
         @Override
         public RequestContext strip(RequestContext context) {
             return context.user(null);
-        }
-    }, (cached, toCache) -> {
-        if (cached == null) return;
-
-        if (!(cached instanceof ServerInfoResponse) || !(toCache instanceof ServerInfoResponse)) return;
-
-        ServerInfoResponse cachedResponse = (ServerInfoResponse) cached;
-        ServerInfoResponse toCacheResponse = (ServerInfoResponse) toCache;
-
-        if (cachedResponse.getPosition() < toCacheResponse.getPosition()) {
-            Bukkit.getPluginManager().callEvent(new CzechcraftServerAdvanceEvent(toCacheResponse));
         }
     }),
 

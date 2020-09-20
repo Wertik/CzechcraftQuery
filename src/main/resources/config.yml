@@ -16,13 +16,25 @@ advance:
   enabled: true
   broadcast:
     - ' '
-    - '&7Server postoupil na pozici &8#&6%serverPosition% &7na &6Czech&8-&6craft&8.&6eu &7s &e%serverVotes% &7hlasy!'
+    - '&7Server advanced to position &8#&6%serverPosition% &7on &6Czech&8-&6craft&8.&6eu &7with &e%serverVotes% &7votes!'
+    - ' '
+
+# Listen to when the server drops in the leaderboard and broadcast a message.
+drop:
+  enabled: true
+  broadcast:
+    - ' '
+    - '&7Server dropped to position &8#&6%serverPosition% &7on &6Czech&8-&6craft&8.&6eu &7with &e%serverVotes% &7votes!'
     - ' '
 
 # Refresh rates in seconds.
 refresh-rates:
   server_info: 300
   next_vote: 300
+  server_votes: 300
+  user_votes: 300
+  top_votes: 300
+  server_votes_monthly: 300
 
 # Time formats
 formats:

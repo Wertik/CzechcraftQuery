@@ -7,7 +7,7 @@ import space.devport.utils.UsageFlag;
 import space.devport.utils.utility.VersionUtil;
 import space.devport.wertik.czechcraftquery.commands.QueryCommand;
 import space.devport.wertik.czechcraftquery.commands.subcommands.*;
-import space.devport.wertik.czechcraftquery.listeners.AdvanceListener;
+import space.devport.wertik.czechcraftquery.listeners.PositionChangeListener;
 import space.devport.wertik.czechcraftquery.listeners.VotifierListener;
 import space.devport.wertik.czechcraftquery.system.RequestService;
 import space.devport.wertik.czechcraftquery.system.struct.RequestType;
@@ -28,7 +28,7 @@ public class QueryPlugin extends DevportPlugin {
     private RequestService service;
 
     private VotifierListener votifierListener;
-    private AdvanceListener advanceListener;
+    private PositionChangeListener positionChangeListener;
 
     private QueryPlaceholders placeholders;
 
@@ -42,7 +42,7 @@ public class QueryPlugin extends DevportPlugin {
 
         loadOptions();
 
-        this.advanceListener = new AdvanceListener(this);
+        this.positionChangeListener = new PositionChangeListener(this);
 
         addMainCommand(new QueryCommand())
                 .addSubCommand(new ReloadSubCommand(this))
@@ -72,7 +72,7 @@ public class QueryPlugin extends DevportPlugin {
         setupPlaceholders();
         setupVotifier();
         loadOptions();
-        this.advanceListener.load();
+        this.positionChangeListener.load();
     }
 
     private void setupVotifier() {
