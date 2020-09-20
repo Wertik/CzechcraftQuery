@@ -14,18 +14,20 @@ force-update-on-vote: true
 # Listen to when the server advances in the leaderboard and broadcast a message.
 advance:
   enabled: true
-  broadcast:
-    - ' '
-    - '&7Server advanced to position &8#&6%serverPosition% &7on &6Czech&8-&6craft&8.&6eu &7with &e%serverVotes% &7votes!'
-    - ' '
+  rewards:
+    broadcast:
+      - ' '
+      - '&7Server advanced to position &8#&6%serverPosition% &7on &6Czech&8-&6craft&8.&6eu &7with &e%serverVotes% &7votes!'
+      - ' '
 
 # Listen to when the server drops in the leaderboard and broadcast a message.
 drop:
   enabled: true
-  broadcast:
-    - ' '
-    - '&7Server dropped to position &8#&6%serverPosition% &7on &6Czech&8-&6craft&8.&6eu &7with &e%serverVotes% &7votes!'
-    - ' '
+  rewards:
+    broadcast:
+      - ' '
+      - '&7Server dropped to position &8#&6%serverPosition% &7on &6Czech&8-&6craft&8.&6eu &7with &e%serverVotes% &7votes!'
+      - ' '
 
 # Refresh rates in seconds.
 refresh-rates:
