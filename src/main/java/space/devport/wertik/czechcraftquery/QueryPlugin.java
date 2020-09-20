@@ -38,7 +38,7 @@ public class QueryPlugin extends DevportPlugin {
 
         RequestType.initializeHandlers(this);
 
-        new QueryLanguage();
+        new QueryLanguage(this);
 
         loadOptions();
 

@@ -1,8 +1,13 @@
 package space.devport.wertik.czechcraftquery;
 
+import space.devport.utils.DevportPlugin;
 import space.devport.utils.text.language.LanguageDefaults;
 
 public class QueryLanguage extends LanguageDefaults {
+
+    public QueryLanguage(DevportPlugin plugin) {
+        super(plugin);
+    }
 
     @Override
     public void setDefaults() {
