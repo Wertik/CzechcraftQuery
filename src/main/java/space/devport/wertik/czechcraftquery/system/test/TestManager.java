@@ -30,8 +30,13 @@ public class TestManager {
     public void load() {
         File testDirectory = new File(plugin.getDataFolder(), "/tests/");
 
-        // We don't mind.
-        if (!testDirectory.exists()) return;
+        // Create defaults.
+        if (!testDirectory.exists()) {
+            testDirectory.mkdirs();
+
+            plugin.saveResource("tests/test1.json", false);
+            plugin.saveResource("tests/test2.json", false);
+        }
 
         for (File file : testDirectory.listFiles()) {
 
