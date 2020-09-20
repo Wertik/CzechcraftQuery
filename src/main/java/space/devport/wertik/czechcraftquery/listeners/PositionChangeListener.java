@@ -5,8 +5,8 @@ import org.bukkit.event.Listener;
 import space.devport.utils.ConsoleOutput;
 import space.devport.utils.struct.Rewards;
 import space.devport.wertik.czechcraftquery.QueryPlugin;
-import space.devport.wertik.czechcraftquery.api.events.CzechcraftServerAdvanceEvent;
-import space.devport.wertik.czechcraftquery.api.events.CzechcraftServerDropEvent;
+import space.devport.wertik.czechcraftquery.api.events.ServerAdvanceEvent;
+import space.devport.wertik.czechcraftquery.api.events.ServerDropEvent;
 
 public class PositionChangeListener implements Listener {
 
@@ -26,7 +26,7 @@ public class PositionChangeListener implements Listener {
     }
 
     @EventHandler
-    public void onAdvance(CzechcraftServerAdvanceEvent event) {
+    public void onAdvance(ServerAdvanceEvent event) {
         ConsoleOutput.getInstance().debug("Caught event: " + event.getResponse().toString());
 
         if (!plugin.getConfig().getBoolean("advance.enabled", false)) return;
@@ -39,7 +39,7 @@ public class PositionChangeListener implements Listener {
     }
 
     @EventHandler
-    public void onDrop(CzechcraftServerDropEvent event) {
+    public void onDrop(ServerDropEvent event) {
         ConsoleOutput.getInstance().debug("Caught event: " + event.getResponse().toString());
 
         if (!plugin.getConfig().getBoolean("drop.enabled", false)) return;

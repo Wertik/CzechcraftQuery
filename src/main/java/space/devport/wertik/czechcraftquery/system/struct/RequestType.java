@@ -5,8 +5,8 @@ import lombok.Getter;
 import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 import space.devport.wertik.czechcraftquery.QueryPlugin;
-import space.devport.wertik.czechcraftquery.api.events.CzechcraftServerAdvanceEvent;
-import space.devport.wertik.czechcraftquery.api.events.CzechcraftServerDropEvent;
+import space.devport.wertik.czechcraftquery.api.events.ServerAdvanceEvent;
+import space.devport.wertik.czechcraftquery.api.events.ServerDropEvent;
 import space.devport.wertik.czechcraftquery.exception.ResponseParserException;
 import space.devport.wertik.czechcraftquery.system.struct.context.ContextModifier;
 import space.devport.wertik.czechcraftquery.system.struct.context.RequestContext;
@@ -58,9 +58,9 @@ public enum RequestType {
         ServerInfoResponse toCacheResponse = (ServerInfoResponse) toCache;
 
         if (cachedResponse.getPosition() > toCacheResponse.getPosition()) {
-            QueryPlugin.callEvent(new CzechcraftServerAdvanceEvent(toCacheResponse));
+            QueryPlugin.callEvent(new ServerAdvanceEvent(toCacheResponse));
         } else if (cachedResponse.getPosition() < toCacheResponse.getPosition()) {
-            QueryPlugin.callEvent(new CzechcraftServerDropEvent(toCacheResponse));
+            QueryPlugin.callEvent(new ServerDropEvent(toCacheResponse));
         }
     }),
 
