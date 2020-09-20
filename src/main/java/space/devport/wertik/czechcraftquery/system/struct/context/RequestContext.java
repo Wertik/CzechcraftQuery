@@ -61,7 +61,7 @@ public class RequestContext {
 
     @Override
     public String toString() {
-        return serverSlug + ";" + userName + ";" + month;
+        return serverSlug + (userName == null ? "" : ";" + userName) + (month == null ? "" : ";" + month);
     }
 
     @Override
