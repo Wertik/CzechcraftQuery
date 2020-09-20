@@ -11,6 +11,7 @@ import space.devport.wertik.czechcraftquery.system.struct.RequestType;
 import space.devport.wertik.czechcraftquery.system.struct.context.RequestContext;
 import space.devport.wertik.czechcraftquery.system.struct.response.AbstractResponse;
 
+import java.util.Arrays;
 import java.util.concurrent.CompletableFuture;
 
 public class GetSubCommand extends QuerySubCommand {
@@ -26,7 +27,7 @@ public class GetSubCommand extends QuerySubCommand {
         if (type == null)
             return CommandResult.FAILURE;
 
-        RequestContext context = CommandUtils.parseContext(sender, args);
+        RequestContext context = CommandUtils.parseContext(sender, Arrays.copyOfRange(args, 1, args.length));
 
         if (!type.verifyContext(context)) {
             language.getPrefixed("Commands.Invalid-Context")

@@ -2,15 +2,25 @@ package space.devport.wertik.czechcraftquery;
 
 import lombok.Getter;
 import me.clip.placeholderapi.PlaceholderAPIPlugin;
+import org.bukkit.Bukkit;
+import org.bukkit.event.Event;
+import space.devport.utils.ConsoleOutput;
 import space.devport.utils.DevportPlugin;
 import space.devport.utils.UsageFlag;
 import space.devport.utils.utility.VersionUtil;
 import space.devport.wertik.czechcraftquery.commands.QueryCommand;
-import space.devport.wertik.czechcraftquery.commands.subcommands.*;
+import space.devport.wertik.czechcraftquery.commands.subcommands.ClearSubCommand;
+import space.devport.wertik.czechcraftquery.commands.subcommands.GetSubCommand;
+import space.devport.wertik.czechcraftquery.commands.subcommands.ReloadSubCommand;
+import space.devport.wertik.czechcraftquery.commands.subcommands.RequestSubCommand;
+import space.devport.wertik.czechcraftquery.commands.subcommands.StartSubCommand;
+import space.devport.wertik.czechcraftquery.commands.subcommands.StopSubCommand;
+import space.devport.wertik.czechcraftquery.commands.subcommands.TestSubCommand;
 import space.devport.wertik.czechcraftquery.listeners.PositionChangeListener;
 import space.devport.wertik.czechcraftquery.listeners.VotifierListener;
 import space.devport.wertik.czechcraftquery.system.RequestService;
 import space.devport.wertik.czechcraftquery.system.struct.RequestType;
+import space.devport.wertik.czechcraftquery.system.test.TestManager;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -20,6 +30,9 @@ public class QueryPlugin extends DevportPlugin {
 
     public static final DateTimeFormatter DATE_TIME_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     public static final DateFormat MONTH_FORMAT = new SimpleDateFormat("yyyy/MM");
+
+    @Getter
+    private TestManager testManager;
 
     @Getter
     private String durationFormat;
@@ -38,11 +51,16 @@ public class QueryPlugin extends DevportPlugin {
 
         RequestType.initializeHandlers(this);
 
+        this.testManager = new TestManager(this);
+        this.testManager.load();
+
         new QueryLanguage(this);
 
         loadOptions();
 
         this.positionChangeListener = new PositionChangeListener(this);
+        this.positionChangeListener.load();
+        registerListener(this.positionChangeListener);
 
         addMainCommand(new QueryCommand())
                 .addSubCommand(new ReloadSubCommand(this))
@@ -50,7 +68,8 @@ public class QueryPlugin extends DevportPlugin {
                 .addSubCommand(new RequestSubCommand(this))
                 .addSubCommand(new ClearSubCommand(this))
                 .addSubCommand(new StartSubCommand(this))
-                .addSubCommand(new StopSubCommand(this));
+                .addSubCommand(new StopSubCommand(this))
+                .addSubCommand(new TestSubCommand(this));
 
         setupVotifier();
         setupPlaceholders();
@@ -69,9 +88,14 @@ public class QueryPlugin extends DevportPlugin {
     @Override
     public void onReload() {
         RequestType.reloadHandlers(this);
+
+        this.testManager.load();
+
         setupPlaceholders();
         setupVotifier();
+
         loadOptions();
+
         this.positionChangeListener.load();
     }
 
@@ -111,5 +135,13 @@ public class QueryPlugin extends DevportPlugin {
     @Override
     public UsageFlag[] usageFlags() {
         return new UsageFlag[]{UsageFlag.COMMANDS, UsageFlag.CONFIGURATION, UsageFlag.LANGUAGE};
+    }
+
+    // Event shortcut
+    public static void callEvent(Event event) {
+        Bukkit.getScheduler().runTask(QueryPlugin.getInstance(), () -> {
+            ConsoleOutput.getInstance().debug("Called event " + event.getEventName());
+            Bukkit.getPluginManager().callEvent(event);
+        });
     }
 }

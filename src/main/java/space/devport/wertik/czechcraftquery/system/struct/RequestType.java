@@ -3,7 +3,7 @@ package space.devport.wertik.czechcraftquery.system.struct;
 import com.google.gson.JsonObject;
 import lombok.Getter;
 import lombok.Setter;
-import org.bukkit.Bukkit;
+import org.jetbrains.annotations.NotNull;
 import space.devport.wertik.czechcraftquery.QueryPlugin;
 import space.devport.wertik.czechcraftquery.api.events.CzechcraftServerAdvanceEvent;
 import space.devport.wertik.czechcraftquery.api.events.CzechcraftServerDropEvent;
@@ -41,12 +41,12 @@ public enum RequestType {
         return new ServerInfoResponse(serverSlug, serverName, address, position, votes);
     }, new ContextModifier() {
         @Override
-        public boolean verify(RequestContext context) {
+        public boolean verify(@NotNull RequestContext context) {
             return context.getServerSlug() != null;
         }
 
         @Override
-        public RequestContext strip(RequestContext context) {
+        public RequestContext strip(@NotNull RequestContext context) {
             return context.month(null).user(null);
         }
     }, (cached, toCache) -> {
@@ -58,9 +58,9 @@ public enum RequestType {
         ServerInfoResponse toCacheResponse = (ServerInfoResponse) toCache;
 
         if (cachedResponse.getPosition() > toCacheResponse.getPosition()) {
-            Bukkit.getPluginManager().callEvent(new CzechcraftServerAdvanceEvent(toCacheResponse));
+            QueryPlugin.callEvent(new CzechcraftServerAdvanceEvent(toCacheResponse));
         } else if (cachedResponse.getPosition() < toCacheResponse.getPosition()) {
-            Bukkit.getPluginManager().callEvent(new CzechcraftServerDropEvent(toCacheResponse));
+            QueryPlugin.callEvent(new CzechcraftServerDropEvent(toCacheResponse));
         }
     }),
 
@@ -74,12 +74,12 @@ public enum RequestType {
         return new NextVoteResponse(userName, dateTime);
     }, new ContextModifier() {
         @Override
-        public boolean verify(RequestContext context) {
+        public boolean verify(@NotNull RequestContext context) {
             return context.getServerSlug() != null && context.getUserName() != null;
         }
 
         @Override
-        public RequestContext strip(RequestContext context) {
+        public RequestContext strip(@NotNull RequestContext context) {
             return context.month(null);
         }
     }),
@@ -92,12 +92,12 @@ public enum RequestType {
         return new ServerVotesResponse(count, votes);
     }, new ContextModifier() {
         @Override
-        public boolean verify(RequestContext context) {
+        public boolean verify(@NotNull RequestContext context) {
             return context.getServerSlug() != null;
         }
 
         @Override
-        public RequestContext strip(RequestContext context) {
+        public RequestContext strip(@NotNull RequestContext context) {
             return context.month(null).user(null);
         }
     }),
@@ -113,12 +113,12 @@ public enum RequestType {
         return new UserVotesResponse(dateTime, username, count, votes);
     }, new ContextModifier() {
         @Override
-        public boolean verify(RequestContext context) {
+        public boolean verify(@NotNull RequestContext context) {
             return context.getServerSlug() != null && context.getUserName() != null;
         }
 
         @Override
-        public RequestContext strip(RequestContext context) {
+        public RequestContext strip(@NotNull RequestContext context) {
             return context.month(null);
         }
     }),
@@ -130,12 +130,12 @@ public enum RequestType {
         return new TopVotersResponse(topVoters);
     }, new ContextModifier() {
         @Override
-        public boolean verify(RequestContext context) {
+        public boolean verify(@NotNull RequestContext context) {
             return context.getServerSlug() != null;
         }
 
         @Override
-        public RequestContext strip(RequestContext context) {
+        public RequestContext strip(@NotNull RequestContext context) {
             return context.user(null).month(null);
         }
     }),
@@ -149,12 +149,12 @@ public enum RequestType {
     }, new ContextModifier() {
 
         @Override
-        public boolean verify(RequestContext context) {
+        public boolean verify(@NotNull RequestContext context) {
             return context.getServerSlug() != null && context.getMonth() != null;
         }
 
         @Override
-        public RequestContext strip(RequestContext context) {
+        public RequestContext strip(@NotNull RequestContext context) {
             return context.user(null);
         }
     }),
@@ -168,12 +168,12 @@ public enum RequestType {
         return new UserMonthlyVotesResponse(count, votes);
     }, new ContextModifier() {
         @Override
-        public boolean verify(RequestContext context) {
+        public boolean verify(@NotNull RequestContext context) {
             return false;// context.getServerSlug() != null && context.getUserName() != null && context.getMonth() != null;
         }
 
         @Override
-        public RequestContext strip(RequestContext context) {
+        public RequestContext strip(@NotNull RequestContext context) {
             return context;
         }
     });
@@ -222,10 +222,11 @@ public enum RequestType {
     }
 
     public boolean verifyContext(RequestContext context) {
-        return contextModifier.verify(context);
+        return context != null && contextModifier.verify(context);
     }
 
     public RequestContext stripContext(final RequestContext context) {
+        if (context == null) return null;
         return contextModifier.strip(new RequestContext(context));
     }
 

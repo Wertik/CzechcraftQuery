@@ -9,10 +9,14 @@ import space.devport.wertik.czechcraftquery.QueryPlugin;
 import space.devport.wertik.czechcraftquery.exception.ErrorResponseException;
 import space.devport.wertik.czechcraftquery.system.struct.context.RequestContext;
 import space.devport.wertik.czechcraftquery.system.struct.response.AbstractResponse;
-import space.devport.wertik.czechcraftquery.system.struct.response.impl.BlankResponse;
-import space.devport.wertik.czechcraftquery.system.struct.response.impl.ErrorResponse;
+import space.devport.wertik.czechcraftquery.system.struct.response.impl.invalid.BlankResponse;
+import space.devport.wertik.czechcraftquery.system.struct.response.impl.invalid.ErrorResponse;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
@@ -87,10 +91,29 @@ public class RequestHandler implements Runnable {
 
         CompletableFuture<JsonObject> future = plugin.getService().sendRequest(finalContext.parse(requestType.getStringURL()));
 
+        return acceptResponse(context, future);
+    }
+
+    /**
+     * Parse and cache a test response.
+     */
+    public CompletableFuture<AbstractResponse> acceptTestResponse(RequestContext context, JsonObject jsonObject) {
+        final RequestContext finalContext = requestType.stripContext(context);
+
+        if (!requestType.verifyContext(finalContext))
+            return CompletableFuture.supplyAsync(() -> new BlankResponse("Invalid context."));
+
+        return acceptResponse(context, CompletableFuture.supplyAsync(() -> jsonObject));
+    }
+
+    /**
+     * Accept a Json response from a request and cache it based on context provided.
+     */
+    public CompletableFuture<AbstractResponse> acceptResponse(RequestContext context, CompletableFuture<JsonObject> future) {
         return future.thenApplyAsync((jsonResponse) -> {
             AbstractResponse response = requestType.parse(jsonResponse);
-            Validate.notNull(response, "Response from context " + finalContext.toString() + " could not be parsed.");
-            cacheResponse(finalContext, response);
+            Validate.notNull(response, "Response from context " + context.toString() + " could not be parsed.");
+            cacheResponse(context, response);
             return response;
         }).exceptionally((exception) -> {
 

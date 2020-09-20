@@ -9,7 +9,7 @@ import space.devport.wertik.czechcraftquery.QueryPlugin;
 public abstract class QuerySubCommand extends SubCommand {
 
     @Getter
-    private final QueryPlugin plugin;
+    protected final QueryPlugin plugin;
 
     public QuerySubCommand(QueryPlugin plugin, String name) {
         super(name);

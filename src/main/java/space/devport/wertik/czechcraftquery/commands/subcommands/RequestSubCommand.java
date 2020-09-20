@@ -10,6 +10,8 @@ import space.devport.wertik.czechcraftquery.commands.QuerySubCommand;
 import space.devport.wertik.czechcraftquery.system.struct.RequestType;
 import space.devport.wertik.czechcraftquery.system.struct.context.RequestContext;
 
+import java.util.Arrays;
+
 public class RequestSubCommand extends QuerySubCommand {
 
     public RequestSubCommand(QueryPlugin plugin) {
@@ -23,7 +25,7 @@ public class RequestSubCommand extends QuerySubCommand {
 
         if (type == null) return CommandResult.FAILURE;
 
-        RequestContext context = CommandUtils.parseContext(sender, args);
+        RequestContext context = CommandUtils.parseContext(sender, Arrays.copyOfRange(args, 1, args.length));
 
         if (!type.verifyContext(context)) {
             language.getPrefixed("Commands.Invalid-Context")

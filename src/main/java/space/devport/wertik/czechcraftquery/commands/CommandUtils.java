@@ -14,21 +14,21 @@ import java.text.ParseException;
 public class CommandUtils {
 
     public RequestContext parseContext(CommandSender sender, String[] args) {
-        String serverSlug = args[1];
+        String serverSlug = args[0];
 
         RequestContext context = new RequestContext(serverSlug);
 
-        if (args.length > 2) {
-            String month = CommandUtils.attemptParseMonth(args[2]);
+        if (args.length > 1) {
+            String month = CommandUtils.attemptParseMonth(args[1]);
             String username = null;
 
             if (month == null) {
-                username = CommandUtils.attemptParseUsername(sender, args[2]);
-                if (args.length > 3)
-                    month = CommandUtils.attemptParseMonth(args[3]);
+                username = CommandUtils.attemptParseUsername(sender, args[1]);
+                if (args.length > 2)
+                    month = CommandUtils.attemptParseMonth(args[2]);
             } else {
-                if (args.length > 3)
-                    username = CommandUtils.attemptParseUsername(sender, args[3]);
+                if (args.length > 2)
+                    username = CommandUtils.attemptParseUsername(sender, args[2]);
             }
 
             context.month(month);

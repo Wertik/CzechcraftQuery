@@ -1,4 +1,4 @@
-package space.devport.wertik.czechcraftquery.system.struct.response.impl;
+package space.devport.wertik.czechcraftquery.system.struct.response.impl.invalid;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
