@@ -16,7 +16,7 @@ import space.devport.wertik.czechcraftquery.commands.subcommands.RequestSubComma
 import space.devport.wertik.czechcraftquery.commands.subcommands.StartSubCommand;
 import space.devport.wertik.czechcraftquery.commands.subcommands.StopSubCommand;
 import space.devport.wertik.czechcraftquery.commands.subcommands.TestSubCommand;
-import space.devport.wertik.czechcraftquery.listeners.PositionChangeListener;
+import space.devport.wertik.czechcraftquery.listeners.RewardListener;
 import space.devport.wertik.czechcraftquery.listeners.VotifierListener;
 import space.devport.wertik.czechcraftquery.system.RequestService;
 import space.devport.wertik.czechcraftquery.system.struct.RequestType;
@@ -41,7 +41,7 @@ public class QueryPlugin extends DevportPlugin {
     private RequestService service;
 
     private VotifierListener votifierListener;
-    private PositionChangeListener positionChangeListener;
+    private RewardListener rewardListener;
 
     private QueryPlaceholders placeholders;
 
@@ -58,9 +58,9 @@ public class QueryPlugin extends DevportPlugin {
 
         loadOptions();
 
-        this.positionChangeListener = new PositionChangeListener(this);
-        this.positionChangeListener.load();
-        registerListener(this.positionChangeListener);
+        this.rewardListener = new RewardListener(this);
+        this.rewardListener.load();
+        registerListener(this.rewardListener);
 
         addMainCommand(new QueryCommand())
                 .addSubCommand(new ReloadSubCommand(this))
@@ -96,7 +96,7 @@ public class QueryPlugin extends DevportPlugin {
 
         loadOptions();
 
-        this.positionChangeListener.load();
+        this.rewardListener.load();
     }
 
     private void setupVotifier() {

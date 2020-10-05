@@ -29,6 +29,13 @@ drop:
       - '&7Server dropped to position &8#&6%serverPosition% &7on &6Czech&8-&6craft&8.&6eu &7with &e%serverVotes% &7votes!'
       - ' '
 
+# When the player can vote again.
+user-can-vote:
+  enabled: true
+  rewards:
+    inform:
+      - '&7You can vote again!'
+
 # Refresh rates in seconds.
 refresh-rates:
   server_info: 300

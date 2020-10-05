@@ -7,6 +7,7 @@ import org.jetbrains.annotations.NotNull;
 import space.devport.wertik.czechcraftquery.QueryPlugin;
 import space.devport.wertik.czechcraftquery.api.events.ServerAdvanceEvent;
 import space.devport.wertik.czechcraftquery.api.events.ServerDropEvent;
+import space.devport.wertik.czechcraftquery.api.events.UserCanVoteEvent;
 import space.devport.wertik.czechcraftquery.exception.ResponseParserException;
 import space.devport.wertik.czechcraftquery.system.struct.context.ContextModifier;
 import space.devport.wertik.czechcraftquery.system.struct.context.RequestContext;
@@ -81,6 +82,17 @@ public enum RequestType {
         @Override
         public RequestContext strip(@NotNull RequestContext context) {
             return context.month(null);
+        }
+    }, (cached, toCache) -> {
+        if (cached == null) return;
+
+        if (!(cached instanceof NextVoteResponse) || !(toCache instanceof NextVoteResponse)) return;
+
+        NextVoteResponse cachedResponse = (NextVoteResponse) cached;
+        NextVoteResponse toCacheResponse = (NextVoteResponse) toCache;
+
+        if (cachedResponse.getNextVote().isBefore(LocalDateTime.now()) && toCacheResponse.getNextVote().isAfter(LocalDateTime.now())) {
+            QueryPlugin.callEvent(new UserCanVoteEvent(toCacheResponse));
         }
     }),
 
