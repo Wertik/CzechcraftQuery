@@ -3,6 +3,7 @@ package space.devport.wertik.czechcraftquery;
 import lombok.Getter;
 import me.clip.placeholderapi.PlaceholderAPIPlugin;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.event.Event;
 import space.devport.utils.ConsoleOutput;
 import space.devport.utils.DevportPlugin;
@@ -73,6 +74,11 @@ public class QueryPlugin extends DevportPlugin {
 
         setupVotifier();
         setupPlaceholders();
+    }
+
+    @Override
+    public ChatColor getColor() {
+        return ChatColor.GOLD;
     }
 
     private void loadOptions() {
