@@ -91,7 +91,7 @@ public enum RequestType {
         NextVoteResponse cachedResponse = (NextVoteResponse) cached;
         NextVoteResponse toCacheResponse = (NextVoteResponse) toCache;
 
-        if (cachedResponse.getNextVote().isBefore(LocalDateTime.now()) && toCacheResponse.getNextVote().isAfter(LocalDateTime.now())) {
+        if (cachedResponse.getNextVote().isAfter(LocalDateTime.now()) && toCacheResponse.getNextVote().isBefore(LocalDateTime.now())) {
             QueryPlugin.callEvent(new UserCanVoteEvent(toCacheResponse));
         }
     }),
