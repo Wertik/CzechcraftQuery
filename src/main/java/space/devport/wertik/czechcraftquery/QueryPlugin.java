@@ -88,7 +88,7 @@ public class QueryPlugin extends DevportPlugin {
     @Override
     public void onPluginDisable() {
         unregisterPlaceholders();
-        RequestType.clearHandlerCaches(this);
+        RequestType.clearHandlerCaches();
     }
 
     @Override

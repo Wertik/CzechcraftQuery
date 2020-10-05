@@ -53,8 +53,6 @@ public enum RequestType {
     }, (cached, toCache) -> {
         if (cached == null) return;
 
-        if (!(cached instanceof ServerInfoResponse) || !(toCache instanceof ServerInfoResponse)) return;
-
         ServerInfoResponse cachedResponse = (ServerInfoResponse) cached;
         ServerInfoResponse toCacheResponse = (ServerInfoResponse) toCache;
 
@@ -84,9 +82,8 @@ public enum RequestType {
             return context.month(null);
         }
     }, (cached, toCache) -> {
-        if (cached == null) return;
 
-        if (!(cached instanceof NextVoteResponse) || !(toCache instanceof NextVoteResponse)) return;
+        if (cached == null) return;
 
         NextVoteResponse cachedResponse = (NextVoteResponse) cached;
         NextVoteResponse toCacheResponse = (NextVoteResponse) toCache;
@@ -272,7 +269,7 @@ public enum RequestType {
         }
     }
 
-    public static void clearHandlerCaches(QueryPlugin plugin) {
+    public static void clearHandlerCaches() {
         for (RequestType type : values()) {
             type.getRequestHandler().clearCache();
         }

@@ -131,9 +131,7 @@ public class RequestHandler implements Runnable {
     }
 
     private void cacheResponse(RequestContext context, AbstractResponse response) {
-        if (this.cache.containsKey(context))
-            requestType.getResponseListener().listen(this.cache.get(context), response);
-
+        requestType.getResponseListener().listen(this.cache.get(context), response);
         this.cache.put(context, response);
     }
 
