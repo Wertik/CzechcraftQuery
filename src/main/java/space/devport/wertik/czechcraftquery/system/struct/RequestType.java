@@ -7,7 +7,6 @@ import org.jetbrains.annotations.NotNull;
 import space.devport.wertik.czechcraftquery.QueryPlugin;
 import space.devport.wertik.czechcraftquery.api.events.ServerAdvanceEvent;
 import space.devport.wertik.czechcraftquery.api.events.ServerDropEvent;
-import space.devport.wertik.czechcraftquery.api.events.UserCanVoteEvent;
 import space.devport.wertik.czechcraftquery.exception.ResponseParserException;
 import space.devport.wertik.czechcraftquery.system.struct.context.ContextModifier;
 import space.devport.wertik.czechcraftquery.system.struct.context.RequestContext;
@@ -80,16 +79,6 @@ public enum RequestType {
         @Override
         public RequestContext strip(@NotNull RequestContext context) {
             return context.month(null);
-        }
-    }, (cached, toCache) -> {
-
-        if (cached == null) return;
-
-        NextVoteResponse cachedResponse = (NextVoteResponse) cached;
-        NextVoteResponse toCacheResponse = (NextVoteResponse) toCache;
-
-        if (cachedResponse.getNextVote().isAfter(LocalDateTime.now()) && toCacheResponse.getNextVote().isBefore(LocalDateTime.now())) {
-            QueryPlugin.callEvent(new UserCanVoteEvent(toCacheResponse));
         }
     }),
 
@@ -168,9 +157,7 @@ public enum RequestType {
         }
     }),
 
-    // Seems to be removed from the API.
-    @Deprecated
-    USER_VOTES_MONTHLY("https://czech-craft.eu/api/server/%SLUG%/players/%USER%/%MONTH%/", input -> {
+    USER_VOTES_MONTHLY("https://czech-craft.eu/api/server/%SLUG%/player/%USER%/%MONTH%/", input -> {
         int count = input.get("vote_count").getAsInt();
         Set<UserVote> votes = UserVote.parseMultiple(input.get("data").getAsJsonArray());
 
@@ -178,7 +165,7 @@ public enum RequestType {
     }, new ContextModifier() {
         @Override
         public boolean verify(@NotNull RequestContext context) {
-            return false;// context.getServerSlug() != null && context.getUserName() != null && context.getMonth() != null;
+            return context.getServerSlug() != null && context.getUserName() != null && context.getMonth() != null;
         }
 
         @Override
