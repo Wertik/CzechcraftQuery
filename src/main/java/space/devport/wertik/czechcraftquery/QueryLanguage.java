@@ -32,5 +32,8 @@ public class QueryLanguage extends LanguageDefaults {
         addDefault("Commands.Test.Invalid-Test", "&cTest &f%param% &cis not loaded.");
         addDefault("Commands.Test.Starting", "&7&oSupplying the test contents...");
         addDefault("Commands.Test.Done", "&7&oParsed and cached the response...", "&7Type: &f%type%", "&7Context: &f%context%", "&7Contents: &f%response%");
+
+        addDefault("Commands.Update.Done-Single", "&7Request handler cache update requested for type &f%type%");
+        addDefault("Commands.Update.Done", "&7Request handler cache updates requested.");
     }
 }

@@ -17,6 +17,7 @@ import space.devport.wertik.czechcraftquery.commands.subcommands.RequestSubComma
 import space.devport.wertik.czechcraftquery.commands.subcommands.StartSubCommand;
 import space.devport.wertik.czechcraftquery.commands.subcommands.StopSubCommand;
 import space.devport.wertik.czechcraftquery.commands.subcommands.TestSubCommand;
+import space.devport.wertik.czechcraftquery.commands.subcommands.UpdateSubCommand;
 import space.devport.wertik.czechcraftquery.listeners.RewardListener;
 import space.devport.wertik.czechcraftquery.listeners.VotifierListener;
 import space.devport.wertik.czechcraftquery.system.RequestService;
@@ -70,7 +71,8 @@ public class QueryPlugin extends DevportPlugin {
                 .addSubCommand(new ClearSubCommand(this))
                 .addSubCommand(new StartSubCommand(this))
                 .addSubCommand(new StopSubCommand(this))
-                .addSubCommand(new TestSubCommand(this));
+                .addSubCommand(new TestSubCommand(this))
+                .addSubCommand(new UpdateSubCommand(this));
 
         setupVotifier();
         setupPlaceholders();
