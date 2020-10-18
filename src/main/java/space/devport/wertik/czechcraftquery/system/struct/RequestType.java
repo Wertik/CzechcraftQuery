@@ -4,9 +4,11 @@ import com.google.gson.JsonObject;
 import lombok.Getter;
 import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
+import space.devport.utils.ConsoleOutput;
 import space.devport.wertik.czechcraftquery.QueryPlugin;
 import space.devport.wertik.czechcraftquery.api.events.ServerAdvanceEvent;
 import space.devport.wertik.czechcraftquery.api.events.ServerDropEvent;
+import space.devport.wertik.czechcraftquery.api.events.UserCanVoteEvent;
 import space.devport.wertik.czechcraftquery.exception.ResponseParserException;
 import space.devport.wertik.czechcraftquery.system.struct.context.ContextModifier;
 import space.devport.wertik.czechcraftquery.system.struct.context.RequestContext;
@@ -79,6 +81,19 @@ public enum RequestType {
         @Override
         public RequestContext strip(@NotNull RequestContext context) {
             return context.month(null);
+        }
+    }, (cached, toCache) -> {
+
+        if (cached == null) return;
+
+        NextVoteResponse toCacheResponse = (NextVoteResponse) toCache;
+        NextVoteResponse cachedResponse = (NextVoteResponse) cached;
+
+        LocalDateTime now = LocalDateTime.now();
+
+        // If he couldn't vote on the time of last update.
+        if (now.isAfter(toCacheResponse.getNextVote()) && cached.getCacheTime().isBefore(cachedResponse.getNextVote())) {
+            QueryPlugin.callEvent(new UserCanVoteEvent(toCacheResponse));
         }
     }),
 
