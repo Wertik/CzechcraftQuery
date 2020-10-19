@@ -67,6 +67,10 @@
                                     <pattern>space.devport.utils</pattern>
                                     <shadedPattern>${project.groupId}.utils</shadedPattern>
                                 </relocation>
+                                <relocation>
+                                    <pattern>io.netty</pattern>
+                                    <shadedPattern>${project.groupId}.netty</shadedPattern>
+                                </relocation>
                             </relocations>
                         </configuration>
                     </execution>
