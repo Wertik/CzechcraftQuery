@@ -36,6 +36,6 @@ public class TopVote extends VoteData {
 
     @Override
     public String toString() {
-        return username + ";" + votes;
+        return getUsername() + ";" + votes;
     }
 }

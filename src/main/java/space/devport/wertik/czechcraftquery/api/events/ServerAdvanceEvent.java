@@ -8,6 +8,8 @@ import space.devport.wertik.czechcraftquery.system.struct.response.impl.ServerIn
 
 public class ServerAdvanceEvent extends Event {
 
+    private final static HandlerList handlerList = new HandlerList();
+
     @Getter
     private final ServerInfoResponse response;
 
@@ -15,14 +17,12 @@ public class ServerAdvanceEvent extends Event {
         this.response = response;
     }
 
-    private final static HandlerList handlerList = new HandlerList();
-
-    @Override
-    public @NotNull HandlerList getHandlers() {
+    public static HandlerList getHandlerList() {
         return handlerList;
     }
 
-    public static HandlerList getHandlerList() {
+    @Override
+    public @NotNull HandlerList getHandlers() {
         return handlerList;
     }
 }

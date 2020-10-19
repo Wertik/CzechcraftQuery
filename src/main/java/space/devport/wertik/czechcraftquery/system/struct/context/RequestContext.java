@@ -47,11 +47,12 @@ public class RequestContext {
         return this;
     }
 
-    public String parse(String str) {
-        str = parse(str, "%SLUG%", serverSlug);
-        str = parse(str, "%USER%", userName);
-        str = parse(str, "%MONTH%", month);
-        return str;
+    public String parse(final String str) {
+        String output = str;
+        output = parse(output, "%SLUG%", serverSlug);
+        output = parse(output, "%USER%", userName);
+        output = parse(output, "%MONTH%", month);
+        return output;
     }
 
     private String parse(String str, String key, Object value) {

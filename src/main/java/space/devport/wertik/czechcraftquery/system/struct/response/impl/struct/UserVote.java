@@ -44,6 +44,6 @@ public class UserVote extends VoteData {
 
     @Override
     public String toString() {
-        return username + ";" + QueryPlugin.DATE_TIME_FORMAT.format(dateTime) + ";" + delivered;
+        return getUsername() + ";" + QueryPlugin.DATE_TIME_FORMAT.format(dateTime) + ";" + delivered;
     }
 }

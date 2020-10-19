@@ -119,12 +119,11 @@ public class QueryPlugin extends DevportPlugin {
     private void unregisterPlaceholders() {
         if (getServer().getPluginManager().isPluginEnabled("PlaceholderAPI") &&
                 this.placeholders != null &&
-                VersionUtil.compareVersions("2.10.9", PlaceholderAPIPlugin.getInstance().getDescription().getVersion()) > -1) {
+                VersionUtil.compareVersions("2.10.9", PlaceholderAPIPlugin.getInstance().getDescription().getVersion()) > -1 &&
+                this.placeholders.isRegistered()) {
 
-            if (this.placeholders.isRegistered()) {
-                this.placeholders.unregister();
-                consoleOutput.debug("Unregistered placeholder expansion.");
-            }
+            this.placeholders.unregister();
+            consoleOutput.debug("Unregistered placeholder expansion.");
         }
     }
 

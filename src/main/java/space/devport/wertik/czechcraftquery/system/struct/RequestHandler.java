@@ -140,9 +140,9 @@ public class RequestHandler implements Runnable {
      * Request is sent only if there's a response already stored with this context.
      */
     public void updateResponse(RequestContext context) {
-        context = requestType.stripContext(context);
-        if (this.cache.containsKey(context))
-            sendRequest(context);
+        RequestContext strippedContext = requestType.stripContext(context);
+        if (this.cache.containsKey(strippedContext))
+            sendRequest(strippedContext);
     }
 
     public void updateResponses() {

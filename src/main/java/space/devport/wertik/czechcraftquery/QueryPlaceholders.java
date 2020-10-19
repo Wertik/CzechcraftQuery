@@ -7,7 +7,13 @@ import org.jetbrains.annotations.NotNull;
 import space.devport.wertik.czechcraftquery.system.struct.RequestType;
 import space.devport.wertik.czechcraftquery.system.struct.context.RequestContext;
 import space.devport.wertik.czechcraftquery.system.struct.response.AbstractResponse;
-import space.devport.wertik.czechcraftquery.system.struct.response.impl.*;
+import space.devport.wertik.czechcraftquery.system.struct.response.impl.NextVoteResponse;
+import space.devport.wertik.czechcraftquery.system.struct.response.impl.ServerInfoResponse;
+import space.devport.wertik.czechcraftquery.system.struct.response.impl.ServerVotesMonthlyResponse;
+import space.devport.wertik.czechcraftquery.system.struct.response.impl.ServerVotesResponse;
+import space.devport.wertik.czechcraftquery.system.struct.response.impl.TopVotersResponse;
+import space.devport.wertik.czechcraftquery.system.struct.response.impl.UserMonthlyVotesResponse;
+import space.devport.wertik.czechcraftquery.system.struct.response.impl.UserVotesResponse;
 
 import java.text.ParseException;
 import java.time.LocalDateTime;
@@ -51,7 +57,8 @@ public class QueryPlaceholders extends PlaceholderExpansion {
 
         RequestType type = RequestType.fromString(args[0]);
 
-        if (type == null) return "invalid_type";
+        if (type == null)
+            return "invalid_type";
 
         RequestContext context = new RequestContext(args[1]);
 
@@ -74,7 +81,12 @@ public class QueryPlaceholders extends PlaceholderExpansion {
         if (!response.isValid())
             return "no_response";
 
+        String result = "invalid_params";
         switch (type) {
+
+            default:
+                result = "invalid_params";
+                break;
 
             case SERVER_INFO:
                 /*
@@ -87,13 +99,13 @@ public class QueryPlaceholders extends PlaceholderExpansion {
                 ServerInfoResponse serverInfoResponse = (ServerInfoResponse) response;
 
                 if (args[2].equalsIgnoreCase("name")) {
-                    return serverInfoResponse.getServerName();
+                    result = serverInfoResponse.getServerName();
                 } else if (args[2].equalsIgnoreCase("address")) {
-                    return serverInfoResponse.getAddress();
+                    result = serverInfoResponse.getAddress();
                 } else if (args[2].equalsIgnoreCase("position")) {
-                    return String.valueOf(serverInfoResponse.getPosition());
+                    result = String.valueOf(serverInfoResponse.getPosition());
                 } else if (args[2].equalsIgnoreCase("votes")) {
-                    return String.valueOf(serverInfoResponse.getVotes());
+                    result = String.valueOf(serverInfoResponse.getVotes());
                 }
                 break;
 
@@ -105,7 +117,7 @@ public class QueryPlaceholders extends PlaceholderExpansion {
                 ServerVotesResponse serverVotesResponse = (ServerVotesResponse) response;
 
                 if (args[2].equalsIgnoreCase("count")) {
-                    return String.valueOf(serverVotesResponse.getCount());
+                    result = String.valueOf(serverVotesResponse.getCount());
                 }
                 break;
 
@@ -121,19 +133,28 @@ public class QueryPlaceholders extends PlaceholderExpansion {
                 int position = parseInt(args[2]);
 
                 if (position > 0) {
-                    if (args.length < 4) return "not_enough_args";
+                    if (args.length < 4) {
+                        result = "not_enough_args";
+                        break;
+                    }
 
                     if (args[3].equalsIgnoreCase("votes")) {
-                        return String.valueOf(topVotersResponse.getTopVoters().get(Math.max(0, position - 1)).getVotes());
+                        result = String.valueOf(topVotersResponse.getTopVoters().get(Math.max(0, position - 1)).getVotes());
                     } else {
-                        return topVotersResponse.getTopVoters().get(position - 1).getUsername();
+                        result = topVotersResponse.getTopVoters().get(position - 1).getUsername();
                     }
+                    break;
                 }
 
                 if (args[2].equalsIgnoreCase("position")) {
-                    if (player == null) return "no_player";
-                    return String.valueOf(topVotersResponse.findPosition(player.getUniqueId()));
-                } else return "-1";
+                    if (player == null) {
+                        result = "no_player";
+                        break;
+                    }
+
+                    result = String.valueOf(topVotersResponse.findPosition(player.getUniqueId()));
+                } else result = "-1";
+                break;
 
             case USER_VOTES:
                 /*
@@ -144,9 +165,9 @@ public class QueryPlaceholders extends PlaceholderExpansion {
                 UserVotesResponse userVotesResponse = (UserVotesResponse) response;
 
                 if (args[2].equalsIgnoreCase("count")) {
-                    return String.valueOf(userVotesResponse.getCount());
+                    result = String.valueOf(userVotesResponse.getCount());
                 } else if (args[2].equalsIgnoreCase("nextvote")) {
-                    return QueryPlugin.DATE_TIME_FORMAT.format(userVotesResponse.getNextVote());
+                    result = QueryPlugin.DATE_TIME_FORMAT.format(userVotesResponse.getNextVote());
                 }
                 break;
 
@@ -160,30 +181,40 @@ public class QueryPlaceholders extends PlaceholderExpansion {
                 NextVoteResponse nextVoteResponse = (NextVoteResponse) response;
 
                 if (args[2].equalsIgnoreCase("canvote")) {
-                    return nextVoteResponse.getNextVote().isBefore(LocalDateTime.now()) ? "yes" : "no";
+                    result = nextVoteResponse.getNextVote().isBefore(LocalDateTime.now()) ? "yes" : "no";
                 } else if (args[2].equalsIgnoreCase("until")) {
                     LocalDateTime time = nextVoteResponse.getNextVote();
 
-                    if (time == null) return "0";
+                    if (time == null) {
+                        result = "0";
+                        break;
+                    }
 
                     long until = time.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli() - System.currentTimeMillis();
 
-                    return DurationFormatUtils.formatDuration(until, plugin.getDurationFormat());
+                    result = DurationFormatUtils.formatDuration(until, plugin.getDurationFormat());
                 }
                 break;
+
             case SERVER_VOTES_MONTHLY:
                 /*
                  * <month>_count%
                  * */
 
-                if (args.length < 4) return "not_enough_args";
+                if (args.length < 4) {
+                    result = "not_enough_args";
+                    break;
+                }
 
-                if (context.getMonth() == null) return "no_month";
+                if (context.getMonth() == null) {
+                    result = "no_month";
+                    break;
+                }
 
                 ServerVotesMonthlyResponse serverVotesMonthlyResponse = (ServerVotesMonthlyResponse) response;
 
                 if (args[3].equalsIgnoreCase("count")) {
-                    return String.valueOf(serverVotesMonthlyResponse.getCount());
+                    result = String.valueOf(serverVotesMonthlyResponse.getCount());
                 }
                 break;
 
@@ -192,20 +223,30 @@ public class QueryPlaceholders extends PlaceholderExpansion {
                  * <month>_count%
                  * */
 
-                if (player == null) return "no_player";
+                if (player == null) {
+                    result = "no_player";
+                    break;
+                }
 
-                if (args.length < 4) return "not_enough_args";
+                if (args.length < 4) {
+                    result = "not_enough_args";
+                    break;
+                }
 
-                if (context.getMonth() == null) return "no_month";
+                if (context.getMonth() == null) {
+                    result = "no_month";
+                    break;
+                }
 
                 UserMonthlyVotesResponse userMonthlyVotesResponse = (UserMonthlyVotesResponse) response;
 
                 if (args[3].equalsIgnoreCase("count")) {
-                    return String.valueOf(userMonthlyVotesResponse.getCount());
+                    result = String.valueOf(userMonthlyVotesResponse.getCount());
                 }
+                break;
         }
 
-        return "invalid_params";
+        return result;
     }
 
     private int parseInt(String str) {

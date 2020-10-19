@@ -11,7 +11,7 @@ import java.util.UUID;
 public abstract class VoteData {
 
     @Getter
-    final String username;
+    private final String username;
 
     private OfflinePlayer offlinePlayer;
 

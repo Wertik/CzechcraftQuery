@@ -4,7 +4,6 @@ import com.google.gson.JsonObject;
 import lombok.Getter;
 import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
-import space.devport.utils.ConsoleOutput;
 import space.devport.wertik.czechcraftquery.QueryPlugin;
 import space.devport.wertik.czechcraftquery.api.events.ServerAdvanceEvent;
 import space.devport.wertik.czechcraftquery.api.events.ServerDropEvent;
