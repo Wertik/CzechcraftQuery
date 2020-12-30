@@ -46,7 +46,6 @@
                     <compilerVersion>1.8</compilerVersion>
                     <source>8</source>
                     <target>8</target>
-                    <release>8</release>
                 </configuration>
             </plugin>
             <plugin>
@@ -98,7 +97,7 @@
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
-            <version>1.16.3-R0.1-SNAPSHOT</version>
+            <version>1.16.4-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -110,13 +109,13 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.12</version>
+            <version>1.18.16</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>space.devport.utils</groupId>
-            <artifactId>DevportUtils</artifactId>
-            <version>LATEST</version>
+            <artifactId>devportutils</artifactId>
+            <version>3.6.1</version>
             <scope>compile</scope>
         </dependency>
         <dependency>

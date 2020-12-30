@@ -75,7 +75,7 @@ public class QueryPlugin extends DevportPlugin {
                 .addSubCommand(new UpdateSubCommand(this));
 
         setupVotifier();
-        setupPlaceholders();
+        registerPlaceholders();
     }
 
     @Override
@@ -99,7 +99,7 @@ public class QueryPlugin extends DevportPlugin {
 
         this.testManager.load();
 
-        setupPlaceholders();
+        registerPlaceholders();
         setupVotifier();
 
         loadOptions();
@@ -123,11 +123,11 @@ public class QueryPlugin extends DevportPlugin {
                 this.placeholders.isRegistered()) {
 
             this.placeholders.unregister();
-            consoleOutput.debug("Unregistered placeholder expansion.");
+            consoleOutput.debug("Unregistered old placeholder expansion.");
         }
     }
 
-    private void setupPlaceholders() {
+    private void registerPlaceholders() {
         if (getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")) {
 
             if (placeholders == null)
