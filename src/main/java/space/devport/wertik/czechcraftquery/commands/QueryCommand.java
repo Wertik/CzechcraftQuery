@@ -1,18 +1,22 @@
 package space.devport.wertik.czechcraftquery.commands;
 
-import org.bukkit.command.CommandSender;
 import space.devport.utils.commands.MainCommand;
-import space.devport.utils.commands.struct.CommandResult;
+import space.devport.wertik.czechcraftquery.QueryPlugin;
+import space.devport.wertik.czechcraftquery.commands.subcommands.*;
 
 public class QueryCommand extends MainCommand {
 
-    public QueryCommand() {
-        super("czechcraftquery");
-    }
+    public QueryCommand(QueryPlugin plugin) {
+        super(plugin, "czechcraftquery");
 
-    @Override
-    protected CommandResult perform(CommandSender sender, String label, String[] args) {
-        return super.perform(sender, label, args);
+        withSubCommand(new ReloadSubCommand(plugin));
+        withSubCommand(new GetSubCommand(plugin));
+        withSubCommand(new RequestSubCommand(plugin));
+        withSubCommand(new ClearSubCommand(plugin));
+        withSubCommand(new StartSubCommand(plugin));
+        withSubCommand(new StopSubCommand(plugin));
+        withSubCommand(new TestSubCommand(plugin));
+        withSubCommand(new UpdateSubCommand(plugin));
     }
 
     @Override

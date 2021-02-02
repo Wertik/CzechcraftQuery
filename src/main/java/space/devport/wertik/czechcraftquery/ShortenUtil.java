@@ -6,6 +6,7 @@ import java.util.Collection;
 
 @UtilityClass
 public class ShortenUtil {
+
     public String shortenCollection(Collection<?> collection) {
         return collection.getClass().getSimpleName() + "(" + collection.size() + ")[" + (collection.isEmpty() ? " - " : collection.iterator().next().getClass().getSimpleName()) + "]";
     }

@@ -20,11 +20,11 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
 
-public class QueryPlaceholders extends PlaceholderExpansion {
+public class QueryExpansion extends PlaceholderExpansion {
 
     private final QueryPlugin plugin;
 
-    public QueryPlaceholders(QueryPlugin plugin) {
+    public QueryExpansion(QueryPlugin plugin) {
         this.plugin = plugin;
     }
 

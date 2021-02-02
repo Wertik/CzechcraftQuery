@@ -1,23 +1,17 @@
 package space.devport.wertik.czechcraftquery;
 
 import lombok.Getter;
+import lombok.extern.java.Log;
 import me.clip.placeholderapi.PlaceholderAPIPlugin;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.event.Event;
-import space.devport.utils.ConsoleOutput;
 import space.devport.utils.DevportPlugin;
 import space.devport.utils.UsageFlag;
+import space.devport.utils.logging.DebugLevel;
+import space.devport.utils.utility.DependencyUtil;
 import space.devport.utils.utility.VersionUtil;
 import space.devport.wertik.czechcraftquery.commands.QueryCommand;
-import space.devport.wertik.czechcraftquery.commands.subcommands.ClearSubCommand;
-import space.devport.wertik.czechcraftquery.commands.subcommands.GetSubCommand;
-import space.devport.wertik.czechcraftquery.commands.subcommands.ReloadSubCommand;
-import space.devport.wertik.czechcraftquery.commands.subcommands.RequestSubCommand;
-import space.devport.wertik.czechcraftquery.commands.subcommands.StartSubCommand;
-import space.devport.wertik.czechcraftquery.commands.subcommands.StopSubCommand;
-import space.devport.wertik.czechcraftquery.commands.subcommands.TestSubCommand;
-import space.devport.wertik.czechcraftquery.commands.subcommands.UpdateSubCommand;
 import space.devport.wertik.czechcraftquery.listeners.RewardListener;
 import space.devport.wertik.czechcraftquery.listeners.VotifierListener;
 import space.devport.wertik.czechcraftquery.system.RequestService;
@@ -28,53 +22,48 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.format.DateTimeFormatter;
 
+@Log
 public class QueryPlugin extends DevportPlugin {
 
     public static final DateTimeFormatter DATE_TIME_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     public static final DateFormat MONTH_FORMAT = new SimpleDateFormat("yyyy/MM");
 
     @Getter
-    private TestManager testManager;
+    private static QueryPlugin instance;
 
     @Getter
-    private String durationFormat;
+    private final TestManager testManager = new TestManager(this);
 
     @Getter
-    private RequestService service;
+    private final RequestService service = new RequestService(this);
 
     private VotifierListener votifierListener;
     private RewardListener rewardListener;
 
-    private QueryPlaceholders placeholders;
+    private QueryExpansion expansion;
+
+    @Getter
+    private String durationFormat;
 
     @Override
     public void onPluginEnable() {
-        this.service = new RequestService(this);
+        instance = this;
 
         RequestType.initializeHandlers(this);
 
-        this.testManager = new TestManager(this);
-        this.testManager.load();
+        testManager.load();
 
-        new QueryLanguage(this);
+        new QueryLanguage(this).register();
 
         loadOptions();
 
         this.rewardListener = new RewardListener(this);
-        this.rewardListener.load();
-        registerListener(this.rewardListener);
+        rewardListener.load();
 
-        addMainCommand(new QueryCommand())
-                .addSubCommand(new ReloadSubCommand(this))
-                .addSubCommand(new GetSubCommand(this))
-                .addSubCommand(new RequestSubCommand(this))
-                .addSubCommand(new ClearSubCommand(this))
-                .addSubCommand(new StartSubCommand(this))
-                .addSubCommand(new StopSubCommand(this))
-                .addSubCommand(new TestSubCommand(this))
-                .addSubCommand(new UpdateSubCommand(this));
+        registerListener(rewardListener);
+        registerMainCommand(new QueryCommand(this));
 
-        setupVotifier();
+        setupVotifierListener();
         registerPlaceholders();
     }
 
@@ -95,47 +84,47 @@ public class QueryPlugin extends DevportPlugin {
 
     @Override
     public void onReload() {
-        RequestType.reloadHandlers(this);
+        RequestType.reloadHandlers();
 
-        this.testManager.load();
+        testManager.load();
 
         registerPlaceholders();
-        setupVotifier();
+        setupVotifierListener();
 
         loadOptions();
 
-        this.rewardListener.load();
+        rewardListener.load();
     }
 
-    private void setupVotifier() {
-        if (getPluginManager().isPluginEnabled("Votifier") && this.votifierListener == null) {
+    private void setupVotifierListener() {
+        if (DependencyUtil.isEnabled("Votifier") && votifierListener == null) {
             this.votifierListener = new VotifierListener(this);
             registerListener(votifierListener);
-            consoleOutput.info("Registered Votifier listener.");
+            log.info("Registered Votifier listener.");
         }
     }
 
     // Attempt to unregister
     private void unregisterPlaceholders() {
-        if (getServer().getPluginManager().isPluginEnabled("PlaceholderAPI") &&
-                this.placeholders != null &&
+        if (DependencyUtil.isEnabled("PlaceholderAPI") &&
+                expansion != null &&
                 VersionUtil.compareVersions("2.10.9", PlaceholderAPIPlugin.getInstance().getDescription().getVersion()) > -1 &&
-                this.placeholders.isRegistered()) {
+                expansion.isRegistered()) {
 
-            this.placeholders.unregister();
-            consoleOutput.debug("Unregistered old placeholder expansion.");
+            expansion.unregister();
+            log.log(DebugLevel.DEBUG, "Unregistered old placeholder expansion.");
         }
     }
 
     private void registerPlaceholders() {
-        if (getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")) {
+        if (DependencyUtil.isEnabled("PlaceholderAPI")) {
 
-            if (placeholders == null)
-                this.placeholders = new QueryPlaceholders(this);
+            if (expansion == null)
+                this.expansion = new QueryExpansion(this);
 
             unregisterPlaceholders();
-            this.placeholders.register();
-            consoleOutput.info("Registered placeholder expansion.");
+            expansion.register();
+            log.info("Registered placeholder expansion.");
         }
     }
 
@@ -147,8 +136,8 @@ public class QueryPlugin extends DevportPlugin {
     // Event shortcut
     public static void callEvent(Event event) {
         Bukkit.getScheduler().runTask(QueryPlugin.getInstance(), () -> {
-            ConsoleOutput.getInstance().debug("Called event " + event.getEventName());
             Bukkit.getPluginManager().callEvent(event);
+            log.log(DebugLevel.DEBUG, String.format("Called event %s", event.getEventName()));
         });
     }
 }

@@ -3,7 +3,9 @@ package space.devport.wertik.czechcraftquery.system.struct;
 import com.google.gson.JsonObject;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.java.Log;
 import org.jetbrains.annotations.NotNull;
+import space.devport.utils.logging.DebugLevel;
 import space.devport.wertik.czechcraftquery.QueryPlugin;
 import space.devport.wertik.czechcraftquery.api.events.ServerAdvanceEvent;
 import space.devport.wertik.czechcraftquery.api.events.ServerDropEvent;
@@ -28,6 +30,7 @@ import java.time.LocalDateTime;
 import java.time.temporal.TemporalAccessor;
 import java.util.Set;
 
+@Log
 public enum RequestType {
 
     SERVER_INFO("https://czech-craft.eu/api/server/%SLUG%/", input -> {
@@ -188,6 +191,8 @@ public enum RequestType {
         }
     });
 
+    public static final RequestType[] VALUES = values();
+
     @Getter
     private final String stringURL;
 
@@ -241,14 +246,13 @@ public enum RequestType {
     }
 
     public static void initializeHandlers(QueryPlugin plugin) {
-        for (RequestType type : values()) {
+        for (RequestType type : VALUES) {
             RequestHandler handler = new RequestHandler(plugin, type);
 
-            handler.loadOptions();
             handler.start();
 
             type.setRequestHandler(handler);
-            plugin.getConsoleOutput().debug("Registered request handler for " + type.toString());
+            log.log(DebugLevel.DEBUG, "Registered request handler for " + type.toString());
         }
     }
 
@@ -256,17 +260,15 @@ public enum RequestType {
      * Force response update in all types.
      */
     public static void updateResponsesForContext(RequestContext context) {
-        for (RequestType type : values()) {
+        for (RequestType type : VALUES) {
             type.getRequestHandler().updateResponse(context);
         }
     }
 
-    public static void reloadHandlers(QueryPlugin plugin) {
-        for (RequestType type : values()) {
-            type.getRequestHandler().stop();
-            type.getRequestHandler().loadOptions();
+    public static void reloadHandlers() {
+        for (RequestType type : VALUES) {
             type.getRequestHandler().start();
-            plugin.getConsoleOutput().debug("Reloaded request handler update task for " + type.toString());
+            log.log(DebugLevel.DEBUG, String.format("Reloaded request handler update task for %s", type.toString()));
         }
     }
 

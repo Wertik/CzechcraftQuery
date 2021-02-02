@@ -4,6 +4,8 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
+import lombok.extern.java.Log;
+import space.devport.utils.logging.DebugLevel;
 import space.devport.wertik.czechcraftquery.QueryPlugin;
 import space.devport.wertik.czechcraftquery.ShortenUtil;
 
@@ -17,6 +19,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+@Log
 public class TestManager {
 
     private final QueryPlugin plugin;
@@ -53,12 +56,12 @@ public class TestManager {
 
             String name = file.getName().replace(".json", "");
 
-            this.loadedResponses.put(name, jsonObject);
-            plugin.getConsoleOutput().debug("Loaded test response " + name);
+            loadedResponses.put(name, jsonObject);
+            log.log(DebugLevel.DEBUG, String.format("Loaded test response %s", name));
         }
 
-        if (!this.loadedResponses.isEmpty())
-            plugin.getConsoleOutput().info("Loaded " + this.loadedResponses.size() + " test response(s)...");
+        if (!loadedResponses.isEmpty())
+            log.info(String.format("Loaded %d test response(s)...", loadedResponses.size()));
     }
 
     public JsonObject getTest(String name) {
@@ -82,7 +85,7 @@ public class TestManager {
             return null;
         }
 
-        plugin.getConsoleOutput().debug("Parsed test response: " + ShortenUtil.shortenString(jsonResponse));
+        log.log(DebugLevel.DEBUG, String.format("Test response: %s", ShortenUtil.shortenString(jsonResponse)));
 
         JsonParser jsonParser = new JsonParser();
 
@@ -90,6 +93,7 @@ public class TestManager {
         try {
             element = jsonParser.parse(jsonResponse);
         } catch (JsonSyntaxException e) {
+            log.warning(String.format("Failed to parse test response (%s) : %s", ShortenUtil.shortenString(jsonResponse), e.getMessage()));
             e.printStackTrace();
             return null;
         }

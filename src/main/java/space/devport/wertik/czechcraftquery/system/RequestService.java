@@ -4,10 +4,12 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
+import lombok.extern.java.Log;
 import org.asynchttpclient.AsyncHttpClient;
 import org.asynchttpclient.DefaultAsyncHttpClient;
 import org.asynchttpclient.ListenableFuture;
 import org.asynchttpclient.Response;
+import space.devport.utils.logging.DebugLevel;
 import space.devport.wertik.czechcraftquery.QueryPlugin;
 import space.devport.wertik.czechcraftquery.ShortenUtil;
 import space.devport.wertik.czechcraftquery.exception.ErrorResponseException;
@@ -19,6 +21,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.stream.Collectors;
 
+@Log
 public class RequestService {
 
     private final QueryPlugin plugin;
@@ -36,15 +39,14 @@ public class RequestService {
         try {
             getFuture = asyncHttpClient.prepareGet(stringURL).execute();
         } catch (IllegalArgumentException e) {
-            plugin.getConsoleOutput().err("Could not prepare request from url " + stringURL);
-            if (plugin.getConsoleOutput().isDebug())
-                e.printStackTrace();
+            log.severe(String.format("Could not prepare request from url (%s): %s", stringURL, e.getMessage()));
+            e.printStackTrace();
             return CompletableFuture.supplyAsync(() -> null);
         }
 
         return getFuture.toCompletableFuture().thenApplyAsync((response) -> {
 
-            plugin.getConsoleOutput().debug("Response code: " + response.getStatusCode());
+            log.log(DebugLevel.DEBUG, String.format("Response code: %d", response.getStatusCode()));
 
             if (response.getStatusCode() != 200)
                 throw new ErrorResponseException(response.getStatusText());
@@ -59,7 +61,7 @@ public class RequestService {
                 throw new CompletionException(e);
             }
 
-            plugin.getConsoleOutput().debug("Caught response: " + ShortenUtil.shortenString(jsonResponse) + " from URL " + stringURL);
+            log.log(DebugLevel.DEBUG, "Caught response: " + ShortenUtil.shortenString(jsonResponse) + " from URL " + stringURL);
 
             JsonParser jsonParser = new JsonParser();
 

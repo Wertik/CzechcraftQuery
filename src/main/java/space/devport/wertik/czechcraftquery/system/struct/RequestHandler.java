@@ -1,10 +1,12 @@
 package space.devport.wertik.czechcraftquery.system.struct;
 
 import com.google.gson.JsonObject;
+import lombok.extern.java.Log;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
+import space.devport.utils.logging.DebugLevel;
 import space.devport.wertik.czechcraftquery.QueryPlugin;
 import space.devport.wertik.czechcraftquery.exception.ErrorResponseException;
 import space.devport.wertik.czechcraftquery.system.struct.context.RequestContext;
@@ -20,6 +22,7 @@ import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
+@Log
 public class RequestHandler implements Runnable {
 
     private final QueryPlugin plugin;
@@ -28,9 +31,7 @@ public class RequestHandler implements Runnable {
 
     private final Map<RequestContext, AbstractResponse> cache = new HashMap<>();
 
-    // Update task
-    private int refreshInterval;
-    private BukkitTask task;
+    private BukkitTask refreshTask;
 
     public RequestHandler(QueryPlugin plugin, RequestType requestType) {
         this.plugin = plugin;
@@ -41,26 +42,24 @@ public class RequestHandler implements Runnable {
         int size = this.cache.size();
         this.cache.clear();
         if (size != 0)
-            plugin.getConsoleOutput().debug("Cleared handler cache for " + requestType.toString() + " (" + size + ")");
-    }
-
-    public void loadOptions() {
-        this.refreshInterval = plugin.getConfig().getInt("refresh-rates." + requestType.toString().toLowerCase(), 300) * 20;
+            log.log(DebugLevel.DEBUG, "Cleared handler cache for " + requestType.toString() + " (" + size + ")");
     }
 
     public void stop() {
-        if (task == null) return;
+        if (refreshTask == null)
+            return;
 
-        task.cancel();
-        task = null;
+        refreshTask.cancel();
+        refreshTask = null;
     }
 
     public void start() {
-        if (task != null)
-            stop();
+        stop();
 
-        task = Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, this, refreshInterval, refreshInterval);
-        plugin.getConsoleOutput().debug("Started RequestHandler update task for " + requestType.toString());
+        long refreshInterval = plugin.getConfig().getInt("refresh-rates." + requestType.toString().toLowerCase(), 300) * 20L;
+
+        this.refreshTask = Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, this, refreshInterval, refreshInterval);
+        log.log(DebugLevel.DEBUG, "Started RequestHandler update task for " + requestType.toString());
     }
 
     /**
@@ -119,13 +118,12 @@ public class RequestHandler implements Runnable {
 
             if (exception instanceof ErrorResponseException) {
                 ErrorResponseException errorResponseException = (ErrorResponseException) exception;
-                plugin.getConsoleOutput().warn("Could not fetch data from API, response: " + errorResponseException.getResponseText());
+                log.warning("Could not fetch data from API, response: " + errorResponseException.getResponseText());
                 return new ErrorResponse(errorResponseException.getResponseText());
             }
 
-            plugin.getConsoleOutput().err(exception.getMessage());
-            if (plugin.getConsoleOutput().isDebug())
-                exception.printStackTrace();
+            log.severe(String.format("Failed to handle a response: %s", exception.getMessage()));
+            exception.printStackTrace();
             return new BlankResponse(exception.getCause().getClass().getSimpleName());
         });
     }
@@ -149,7 +147,7 @@ public class RequestHandler implements Runnable {
 
         if (this.cache.isEmpty()) return;
 
-        plugin.getConsoleOutput().debug("Updating all cached values for type " + requestType.toString() + " (" + this.cache.size() + ") ...");
+        log.log(DebugLevel.DEBUG, "Updating all cached values for type " + requestType.toString() + " (" + this.cache.size() + ") ...");
 
         Set<String> onlinePlayers = Bukkit.getOnlinePlayers()
                 .stream().map(Player::getName)
@@ -160,7 +158,7 @@ public class RequestHandler implements Runnable {
             // Player disconnected
             if (context.getUserName() != null && !onlinePlayers.contains(context.getUserName())) {
                 this.cache.remove(context);
-                plugin.getConsoleOutput().debug("Removed context " + context.toString() + " in type " + requestType.toString());
+                log.log(DebugLevel.DEBUG, "Removed context " + context.toString() + " in type " + requestType.toString());
                 continue;
             }
 
@@ -174,7 +172,7 @@ public class RequestHandler implements Runnable {
     }
 
     public boolean isRunning() {
-        return this.task != null;
+        return this.refreshTask != null;
     }
 
     public Map<RequestContext, AbstractResponse> getCache() {
