@@ -12,7 +12,7 @@ public abstract class QuerySubCommand extends SubCommand {
     protected final QueryPlugin plugin;
 
     public QuerySubCommand(QueryPlugin plugin, String name) {
-        super(name);
+        super(plugin, name);
         setPermissions();
         this.plugin = plugin;
     }
